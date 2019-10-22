@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+	--primary-color: #16a085;
+	--accent-color: #16a085;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-size: 14px;
+	font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+header > mat-toolbar mat-icon {
+	padding: .8rem;
+	border-radius: 100%;
+}

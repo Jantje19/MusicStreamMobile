@@ -1,0 +1,89 @@
+header > mat-toolbar {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	padding-right: .1rem;
+}
+
+header > mat-toolbar > div {
+	flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.sort-radio-group {
+  display: flex;
+  margin: 0 1rem;
+  flex-direction: column;
+}
+
+.sort-radio-button {
+  margin: .8rem;
+}
+
+nav {
+	height: calc(100vh - 56px - 50px);
+}
+
+mat-tab-group .tab > div > p {
+	font-size: 1rem;
+	font-weight: bold;
+	text-align: center;
+}
+
+mat-tab-group[loading=true] .tab {
+	display: flex;
+	overflow: hidden;
+	padding-top: 2rem;
+	justify-content: center;
+}
+
+mat-tab-group[loading=true] .tab > div > mat-spinner {
+	transform: scale(.5);
+}
+
+mat-icon#addPlaylistBtn {
+	right: 1rem;
+	bottom: 1rem;
+	padding: 1rem;
+	color: white;
+	cursor: pointer;
+	position: fixed;
+	border-radius: 100%;
+	will-change: transform;
+	transition: transform .3s ease;
+	background-color: var(--accent-color);
+}
+
+mat-icon#addPlaylistBtn[up=true] {
+	transform: translateY(-50px);
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+	margin-bottom: 50px;
+	list-style-type: none;
+}
+
+ul > li {
+	display: flex;
+	overflow: hidden;
+	padding: .1rem 0;
+	padding-left: 1rem;
+	align-items: center;
+}
+
+ul > li > span {
+	flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+ul > li > mat-icon {
+	padding: 1rem;
+	border-radius: 100%;
+	align-self: flex-end;
+}

@@ -1,0 +1,74 @@
+<div #container [attr.open]="openState" [attr.hide]="this.player.queue.length < 1">
+	<div id="header" (click)="open()" (swipeup)="swipeHandler($event.type)">
+		<p title="{{ getSongInfo() }}">{{ getSongInfo() }}</p>
+		<mat-icon [attr.aria-hidden]="openState" aria-label="Toggle icon">keyboard_arrow_up</mat-icon>
+	</div>
+	<div id="content" #content>
+		<div id="album-art" #albumart (swipedown)="swipeHandler($event.type)" (swipeleft)="swipeHandler($event.type)" (swiperight)="swipeHandler($event.type)">
+			<mat-icon (click)="close()" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Close icon">
+				close
+			</mat-icon>
+
+			<mat-menu #contentMenu="matMenu">
+				<button matRipple mat-menu-item (click)="emptyQueue()">Empty queue</button>
+			</mat-menu>
+			<mat-icon [matMenuTriggerFor]="contentMenu" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Menu icon">
+				more_vert
+			</mat-icon>
+		</div>
+		<div id="progress">
+			<span #curTime>0:00</span>
+			<input type="range" value="0" min="0" max="100" id="seekBar" #seekbar (change)="seek()" />
+			<span #durTime>0:00</span>
+		</div>
+		<div id="bottom-sheet" #bottomsheet>
+			<div id="controls">
+				<mat-icon (click)="cycleRepeat()" matRipple role="button" aria-label="Repeat icon" [attr.fade]="player.repeatState === repeatModes.UNSET">{{ player.repeatState === repeatModes.ONE ? 'repeat_one' : 'repeat' }}</mat-icon>
+				<div>
+					<mat-icon matRipple role="button" aria-label="Previous song icon" (click)="player.previous()">skip_previous</mat-icon>
+					<button mat-raised-button #playbtn id="play-button">
+						<mat-icon role="button" aria-label="Play icon" (click)="player.toggle()">
+							{{ player.playing ? 'pause' : 'play_arrow' }}
+						</mat-icon>
+					</button>
+					<mat-icon matRipple role="button" aria-label="Next song icon" (click)="player.next()">skip_next</mat-icon>
+				</div>
+				<mat-icon #shufflebutton id="shuffleButton" matRipple role="button" aria-label="Shuffle icon" (click)="shuffleQueue()" [attr.fade]="true">shuffle</mat-icon>
+			</div>
+			<mat-menu #songmenu="matMenu">
+				<button matRipple mat-menu-item (click)="songMenuClick(songMenuClickTypes.PLAY_NEXT)">Play next</button>
+				<button matRipple mat-menu-item (click)="songMenuClick(songMenuClickTypes.ADD_QUEUE)">Add to queue</button>
+				<button matRipple mat-menu-item (click)="songMenuClick(songMenuClickTypes.REMOVE_QUEUE)">Remove from queue</button>
+				<button matRipple mat-menu-item (click)="songMenuClick(songMenuClickTypes.EDIT_TAGS)">Edit tags</button>
+			</mat-menu>
+			<div id="queue" #queue [attr.open]="queueState" *ngIf="player.queue.length > 0" (swipeup)="swipeHandler($event.type, 'queue')" (swipedown)="swipeHandler($event.type, 'queue')">
+				<div matRipple role="button" (click)="toggleQueue($event)">
+					<div>
+						<mat-icon aria-label="Music icon">volume_up</mat-icon>
+						<div *ngIf="player.queue.selected.tagsFetched" title="{{ player.queue.selected.tags.title }}">
+							<p>{{ player.queue.selected.tags.title }}</p>
+							<span>{{ player.queue.selected.artistAlbumInfo }}</span>
+						</div>
+						<div *ngIf="!player.queue.selected.tagsFetched" title="{{ player.queue.selected }}">
+							<p>{{ player.queue.selected.info }}</p>
+						</div>
+						<mat-icon matRipple role="button" aria-label="Overflow menu icon" [matMenuTriggerFor]="songmenu" #songmenuTrigger="matMenuTrigger">more_vert</mat-icon>
+					</div>
+				</div>
+				<div>
+					<div matRipple role="button" *ngFor="let song of player.queue.list; let i = index" [attr.fade]="i - player.queue.index < 1" (click)="queueClick($event, i)">
+						<span>{{ i - player.queue.index }}</span>
+						<div *ngIf="song.tagsFetched" title="{{ song.tags.title }}">
+							<p>{{ song.tags.title }}</p>
+							<span>{{ song.artistAlbumInfo }}</span>
+						</div>
+						<div *ngIf="!song.tagsFetched" title="{{ song }}">
+							<p>{{ song.info }}</p>
+						</div>
+						<mat-icon matRipple role="button" aria-label="Overflow menu icon" [matMenuTriggerFor]="songmenu" #songmenuTrigger="matMenuTrigger">more_vert</mat-icon>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

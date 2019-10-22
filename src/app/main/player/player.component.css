@@ -1,0 +1,235 @@
+:host {
+	--header-height: 50px;
+}
+
+:host > div {
+	left: 0;
+	margin: 0;
+	bottom: 0;
+	width: 100%;
+	z-index: 1000;
+	position: fixed;
+	padding-left: 0;
+	padding-right: 0;
+	will-change: transform;
+	background-color: white;
+	transition: transform .5s ease;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	height: calc(100% + var(--header-height));
+	transform: translateY(calc(100% - var(--header-height)));
+}
+
+:host > div[open=true] {
+	transform: translateY(0px);
+}
+
+:host > div:not([hide=false]) {
+	transform: translateY(100%);
+}
+
+:host > div > div#header {
+	display: flex;
+	cursor: pointer;
+	overflow: hidden;
+	padding: 10px 1rem;
+	align-items: center;
+	flex-direction: row;
+	height: calc(var(--header-height) - 2 * 10px);
+}
+
+:host > div > div#header > p {
+	flex: 1;
+	margin: 0;
+	font-size: 1rem;
+	overflow: hidden;
+	justify-self: left;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+:host > div > div#header > mat-icon {
+	justify-self: right;
+}
+
+:host > div > div#content {
+	--background-color-darker: #0e1c29;
+	--background-color: #273642;
+
+	height: 100%;
+	position: relative;
+	overscroll-behavior: none;
+	background-color: var(--background-color);
+}
+
+:host > div > div#content mat-icon {
+	padding: 1rem;
+	border-radius: 100%;
+}
+
+:host > div > div#content > div#album-art {
+	width: 100%;
+	height: 60vh;
+	position: relative;
+	background-size: cover;
+	background-color: inherit;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url('/assets/Record.png');
+	box-shadow: 0 0 50px rgba(0, 0, 0, 0.8) inset;
+}
+
+:host > div > div#content > div#album-art > mat-icon {
+	top: 0;
+	right: 0;
+	padding: 1rem;
+	color: white;
+	cursor: pointer;
+	position: absolute;
+	border-radius: 100%;
+}
+
+:host > div > div#content > div#album-art > mat-icon:first-child {
+	left: 0;
+	right: unset;
+}
+
+:host > div > div#content > div#progress {
+	width: 100%;
+	display: grid;
+	color: white;
+	align-items: center;
+	grid-template-rows: 1fr;
+	grid-template-columns: auto 1fr auto;
+	background-color: var(--background-color-darker);
+}
+
+:host > div > div#content > div#progress > span {
+	margin: 0 5px;
+}
+
+:host > div > div#content > div#bottom-sheet {
+	width: 100%;
+	will-change: background-color;
+	height: calc(100vh - 20px - 60vh);
+	transition: background-color .3s ease;
+	background-color: var(--background-color);
+}
+
+:host > div > div#content > div#bottom-sheet div.mat-ripple-element {
+	display: none !important;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls {
+	z-index: 1;
+	display: flex;
+	color: white;
+	padding: 1.5rem;
+	align-items: center;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls mat-icon {
+	padding: 1rem;
+	border-radius: 100%;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls > mat-icon[fade=true] {
+	opacity: .5;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls > div {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls > div > button {
+	padding: 0;
+	width: 3rem;
+	height: 3rem;
+	min-width: unset;
+	border-radius: 100%;
+}
+
+:host > div > div#content > div#bottom-sheet > div#controls > div > button mat-icon {
+	padding: 0;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue {
+	--header-height: calc(24px + (1rem * 2) + (.8rem * 2) + 1px);
+
+	width: 90%;
+	margin: auto;
+	z-index: 100;
+	overflow: hidden;
+	will-change: transform;
+	background-color: white;
+	overscroll-behavior: none;
+	height: calc(100vh / 3 * 2);
+	transition: transform .3s ease;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue[open=true] {
+	transform: translateY(calc((100vh / 3) * -1 - var(--header-height)));
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div:last-child {
+	overflow: hidden;
+	overflow-y: auto;
+	overscroll-behavior: none;
+	height: calc(100% - var(--header-height));
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div:last-child > div[fade=true] {
+	opacity: .5;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div {
+	display: grid;
+	align-items: center;
+	padding: .8rem .5rem;
+	grid-template-rows: 1fr;
+	grid-template-columns: auto 1fr auto;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div:first-child {
+	border-bottom: 1px solid #e0e0e0;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div > span {
+	padding: 0;
+	width: 64px;
+	font-size: 1.2rem;
+    text-align: center;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div > div {
+	overflow: hidden;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > * {
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > p {
+	margin: 0;
+	font-size: 1.1rem;
+}
+
+:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > span {
+	font-size: .8rem;
+}
+
+
+@supports (background: paint(id)) {
+	:host > div > div#content > div#bottom-sheet {
+		--color: #273642;
+		--animation-tick: 0;
+
+		background-image: paint(ripple);
+	}
+}

@@ -1,11 +1,15 @@
-import { NgModule } from '@angular/core';
+import { VideoComponent } from './video/video.component';
 import { Routes, RouterModule } from '@angular/router';
+import { MainComponent } from './main/main.component';
+import { NgModule } from '@angular/core';
 
-
-const routes: Routes = [];
+const routes: Routes = [
+	{ path: 'videos', component: VideoComponent },
+	{ path: '', component: MainComponent },
+];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+	imports: [RouterModule.forRoot(routes)],
+	exports: [RouterModule]
 })
 export class AppRoutingModule { }

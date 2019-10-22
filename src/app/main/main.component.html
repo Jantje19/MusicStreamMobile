@@ -1,0 +1,82 @@
+<header>
+	<mat-toolbar color="primary">
+		<span>{{ title }}</span>
+		<div>
+			<mat-menu #mainMenu="matMenu">
+				<button mat-menu-item matRipple routerLink="videos">Video's</button>
+				<button mat-menu-item matRipple (click)="updateLibrary()">Update library</button>
+				<button mat-menu-item [matMenuTriggerFor]="mainMenuSort">Song sort</button>
+			</mat-menu>
+			<mat-menu #mainMenuSort="matMenu">
+				<mat-radio-group (change)="sortChange()" [(ngModel)]="songSort" class="sort-radio-group">
+					<mat-radio-button class="sort-radio-button" *ngFor="let type of songSortTypes" [value]="type">
+						{{ formatSortTypeString(type) }}
+					</mat-radio-button>
+				</mat-radio-group>
+			</mat-menu>
+			<mat-icon [matMenuTriggerFor]="mainMenu" matRipple aria-hidden="false" aria-label="Overflow menu" role="button">more_vert</mat-icon>
+		</div>
+	</mat-toolbar>
+</header>
+
+<nav>
+	<mat-tab-group (swipeleft)="swipeHandler($event.type)" (swiperight)="swipeHandler($event.type)" [selectedIndex]="selectedTabIndex" [attr.loading]="loadingState" backgroundColor="primary" mat-align-tabs="center" dynamicHeight="true">
+		<mat-tab label="Songs">
+			<ng-template matTabContent>
+				<div class="tab">
+					<div *ngIf="loadingState">
+						<mat-spinner color="accent" diameter="50"></mat-spinner>
+					</div>
+
+					<div *ngIf="!loadingState">
+						<mat-menu #songsMenu="matMenu">
+							<button mat-menu-item matRipple (click)="songMenuClick(songMenuClickTypes.PLAY)">Play</button>
+							<button mat-menu-item matRipple (click)="songMenuClick(songMenuClickTypes.ADD_QUEUE)">Add to queue</button>
+							<button mat-menu-item matRipple (click)="songMenuClick(songMenuClickTypes.PLAY_NEXT)">Play next</button>
+							<button mat-menu-item matRipple (click)="songMenuClick(songMenuClickTypes.EDIT_TAGS)">Edit tags</button>
+						</mat-menu>
+
+						<ul *ngIf="songs.length > 0">
+							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs">
+								<span>{{ song }}</span>
+								<mat-icon [matMenuTriggerFor]="songsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
+							</li>
+						</ul>
+
+						<p *ngIf="songs.length < 1">No songs found</p>
+					</div>
+				</div>
+			</ng-template>
+		</mat-tab>
+		<mat-tab label="Playlists">
+			<ng-template matTabContent>
+				<div class="tab">
+					<div *ngIf="loadingState">
+						<mat-spinner color="accent" diameter="50"></mat-spinner>
+					</div>
+
+					<div *ngIf="!loadingState">
+						<mat-menu #playlistsMenu="matMenu">
+							<button mat-menu-item matRipple (click)="playlistMenuClick(playlistMenuClickTypes.PLAY)">Play</button>
+							<button mat-menu-item matRipple (click)="playlistMenuClick(playlistMenuClickTypes.ADD_QUEUE)">Add to queue</button>
+							<button mat-menu-item matRipple (click)="playlistMenuClick(playlistMenuClickTypes.PLAY_NEXT)">Play next</button>
+						</mat-menu>
+
+						<ul *ngIf="playlists.length > 0">
+							<li matRipple matRippleColor="#bdbdbd60" *ngFor="let playlist of playlists" (click)="playlistClick($event, playlist)">
+								<span>{{ playlist }}</span>
+								<mat-icon [matMenuTriggerFor]="playlistsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
+							</li>
+						</ul>
+
+						<p *ngIf="playlists.length < 1">No playlists found</p>
+					</div>
+
+					<mat-icon [attr.up]="player.player.queue.length > 0" id="addPlaylistBtn" matRipple role="button" aria-label="Add button" class="mat-elevation-z8" (click)="addPlaylist()">add</mat-icon>
+				</div>
+			</ng-template>
+		</mat-tab>
+	</mat-tab-group>
+</nav>
+
+<app-player></app-player>
