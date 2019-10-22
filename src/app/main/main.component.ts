@@ -1,6 +1,7 @@
 import { Component, ViewChild, ViewChildren } from '@angular/core';
 import { Song, Playlist, SWIPE_ACTION } from '../data-types';
 import { PlayerComponent } from './player/player.component';
+import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { MatTab } from '@angular/material/tabs';
@@ -84,11 +85,10 @@ export class MainComponent {
 	}
 
 	addPlaylist() {
-		// TODO: Change URL
 		this.snackBar.open('Not available (yet).', 'Open in desktop', {
 			duration: 3000
 		}).onAction().subscribe(() => {
-			window.location.href = 'http://localhost:8000/createPlaylist.html';
+			window.location.href = environment.apiUrl + '/createPlaylist.html';
 		});
 	}
 
@@ -155,8 +155,7 @@ export class MainComponent {
 			});
 		}
 
-		// TODO: Change url
-		this.http.get('http://localhost:8000/updateJSON/')
+		this.http.get(environment.apiUrl + '/updateJSON/')
 			.subscribe((data: any) => {
 				if (data.success !== true)
 					handleError();
@@ -184,8 +183,7 @@ export class MainComponent {
 
 	private getPlaylist(name: string): Promise<Song[]> {
 		return new Promise((resolve, reject) => {
-			// TODO: Change url
-			this.http.get('http://localhost:8000/playlist/' + name)
+			this.http.get(environment.apiUrl + '/playlist/' + name)
 				.subscribe(data => {
 					resolve(this.songs.filter(song => {
 						return (<any>data).songs.includes(song.name);

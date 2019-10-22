@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -62,7 +63,7 @@ class Song {
 		else {
 			return new Promise((resolve, reject) => {
 				http
-					.get('http://localhost:8000/songInfo/' + this.name)
+					.get(environment.apiUrl + '/songInfo/' + this.name)
 					.subscribe((data: any) => {
 						this.tags.artist = data.artist;
 						this.tags.album = data.album;
@@ -126,9 +127,8 @@ class Player {
 		this.audio.onplaying = this.update;
 		this.audio.onpause = this.update;
 		this.audio.onended = () => {
-			// TODO: Change url
 			this.http
-				.post('http://localhost:8000/updateMostListenedPlaylist', this.queue.selected.name)
+				.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
 				.subscribe((data: { success: boolean, data: any, error: any }) => {
 					if (data.success)
 						console.log(data.data);
@@ -178,7 +178,7 @@ class Player {
 			this.audio.play();
 			this.update();
 		} else {
-			this.audio.src = 'http://localhost:8000/song/' + this.queue.selected.name;
+			this.audio.src = environment.apiUrl + '/song/' + this.queue.selected.name;
 			const returnVal = this.audio.play();
 			const fetchTags = () => {
 				this.queue.selected
@@ -289,19 +289,18 @@ class Player {
 		navigator.mediaSession.playbackState = this.playing ? "playing" : "paused";
 
 		if (this.audio) {
-			// TODO: Change url (http://localhost:8000)
 			// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: this.queue.selected.tags.title || this.queue.selected.info,
 				artist: this.queue.selected.tags.artist || "MusicStream",
 				album: this.queue.selected.tags.album || "",
 				artwork: [
-					{ src: 'http://localhost:8000/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-					{ src: 'http://localhost:8000/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-					{ src: 'http://localhost:8000/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-					{ src: 'http://localhost:8000/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
-					{ src: 'http://localhost:8000/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
-					{ src: 'http://localhost:8000/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
+					{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
 				]
 			});
 

@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Song, Playlist } from './data-types';
 
@@ -37,7 +38,7 @@ export class DataService {
 			this.getData((<any>this.settings).audioDefaultSortType.val);
 		else {
 			this.http
-				.get('http://localhost:8000/getSettings/')
+				.get(environment.apiUrl + '/getSettings/')
 				.subscribe((settings: any) => {
 					this._settings = settings;
 					this.getData(settings.audioDefaultSortType.val);
@@ -47,7 +48,7 @@ export class DataService {
 
 	private getData(sortType: string) {
 		this.http
-			.get('http://localhost:8000/data/?sort=' + sortType)
+			.get(environment.apiUrl + '/data/?sort=' + sortType)
 			.subscribe(({ audio }: any) => {
 				const { songs, playlists } = audio;
 
