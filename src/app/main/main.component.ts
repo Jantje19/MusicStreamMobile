@@ -183,7 +183,7 @@ export class MainComponent {
 	}
 
 	useDesktop() {
-		document.cookie = 'use-desktop=true';
+		document.cookie = 'use-desktop=true;path=/';
 		window.location.href = '/';
 	}
 
