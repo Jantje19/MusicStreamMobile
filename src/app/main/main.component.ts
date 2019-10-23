@@ -46,10 +46,13 @@ export class MainComponent {
 		private http: HttpClient,
 		private snackBar: MatSnackBar
 	) {
+		// @ts-ignore
+		this.songSort = sortMethod;
+
 		document.title = this.title;
+		this.dataService.update(this.songSort, false);
 		this.dataService.load.subscribe(({ songs, playlists, settings }) => {
 			this.songSortTypes = settings.audioDefaultSortType.options;
-			this.songSort = settings.audioDefaultSortType.val;
 			this.playlists = playlists;
 			this.songs = songs;
 
@@ -164,7 +167,7 @@ export class MainComponent {
 						duration: 3000
 					}).onAction().subscribe(() => {
 						this.loadingState = true;
-						this.dataService.update();
+						this.dataService.update(this.songSort);
 					});
 				}
 			}, handleError);
@@ -176,9 +179,7 @@ export class MainComponent {
 
 	sortChange() {
 		this.loadingState = true;
-
-		this.dataService.sortType = this.songSort;
-		this.dataService.update();
+		this.dataService.update(this.songSort);
 	}
 
 	private getPlaylist(name: string): Promise<Song[]> {

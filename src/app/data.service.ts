@@ -2,6 +2,7 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Song, Playlist } from './data-types';
+import { MainComponent } from './main/main.component';
 
 @Injectable({
 	providedIn: 'root'
@@ -21,45 +22,44 @@ export class DataService {
 		return this._settings;
 	}
 
-	set sortType(type: string) {
-		if ((<any>this.settings).audioDefaultSortType.options.includes(type))
-			(<any>this.settings).audioDefaultSortType.val = type;
-	}
-
 	@Output() load = new EventEmitter<{ songs: Song[], playlists: Playlist[], settings: {} }>();
 	@Output() error = new EventEmitter<Error>();
 
-	constructor(private http: HttpClient) {
-		this.update();
-	}
+	constructor(private http: HttpClient) { }
 
-	update() {
-		if (this._settings)
-			this.getData((<any>this.settings).audioDefaultSortType.val);
-		else {
-			this.http
-				.get(environment.apiUrl + '/getSettings/')
-				.subscribe((settings: any) => {
-					this._settings = settings;
-					this.getData(settings.audioDefaultSortType.val);
-				}, this.error.emit.bind(this));
+	update(sortMethod: string, onlyData = true) {
+		const promiseArr = [
+			new Promise((resolve, reject) => {
+				this.http
+					.get(environment.apiUrl + '/data/?sort=' + sortMethod)
+					.subscribe(({ audio }: any) => {
+						const { songs, playlists } = audio;
+
+						this._playlists = playlists.map(val => new Playlist(val));
+						this._songs = songs.map(val => new Song(val));
+
+						resolve();
+					}, reject);
+			})
+		];
+
+		if (!onlyData) {
+			promiseArr.push(new Promise((resolve, reject) => {
+				this.http
+					.get(environment.apiUrl + '/getSettings/')
+					.subscribe((settings: any) => {
+						this._settings = settings;
+						resolve();
+					}, reject);
+			}));
 		}
-	}
 
-	private getData(sortType: string) {
-		this.http
-			.get(environment.apiUrl + '/data/?sort=' + sortType)
-			.subscribe(({ audio }: any) => {
-				const { songs, playlists } = audio;
-
-				this._playlists = playlists.map(val => new Playlist(val));
-				this._songs = songs.map(val => new Song(val));
-
-				this.load.emit({
-					playlists: this._playlists,
-					settings: this._settings,
-					songs: this._songs,
-				});
-			}, this.error.emit.bind(this));
+		Promise.all(promiseArr).then(() => {
+			this.load.emit({
+				playlists: this._playlists,
+				settings: this._settings,
+				songs: this._songs,
+			});
+		}).catch(this.error.emit.bind(this));
 	}
 }
