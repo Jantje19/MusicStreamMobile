@@ -274,8 +274,8 @@ export class PlayerComponent implements AfterViewInit {
 
 	private resetStyle() {
 		this.contentElem.nativeElement.style.setProperty('--background-color-darker', '#0e1c29');
+		this.albumArt.nativeElement.style.backgroundImage = 'url(/mobile-assets/Record.png)';
 		this.contentElem.nativeElement.style.setProperty('--background-color', '#273642');
-		this.albumArt.nativeElement.style.backgroundImage = 'url(/assets/Record.png)';
 		this.sheetElem.nativeElement.style.setProperty('--animation-tick', 0);
 	}
 }
