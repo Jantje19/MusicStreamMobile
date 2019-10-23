@@ -182,6 +182,11 @@ export class MainComponent {
 		this.dataService.update(this.songSort);
 	}
 
+	useDesktop() {
+		document.cookie = 'use-desktop=true';
+		window.location.href = '/';
+	}
+
 	private getPlaylist(name: string): Promise<Song[]> {
 		return new Promise((resolve, reject) => {
 			this.http.get(environment.apiUrl + '/playlist/' + name)
