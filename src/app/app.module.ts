@@ -1,10 +1,8 @@
-import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 import { PlayerComponent } from './main/player/player.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MainComponent } from './main/main.component';
 import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
-import * as Hammer from 'hammerjs';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -25,12 +23,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-export class HammerConfig extends HammerGestureConfig {
-	overrides = <any>{
-		'swipe': { direction: Hammer.DIRECTION_ALL }
-	};
-}
 
 @NgModule({
 	declarations: [
@@ -60,12 +52,7 @@ export class HammerConfig extends HammerGestureConfig {
 		BrowserAnimationsModule,
 		MatProgressSpinnerModule,
 	],
-	providers: [
-		{
-			provide: HAMMER_GESTURE_CONFIG,
-			useClass: HammerConfig
-		}
-	],
+	providers: [],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

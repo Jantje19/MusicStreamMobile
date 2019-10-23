@@ -215,6 +215,7 @@ export class PlayerComponent implements AfterViewInit {
 		}.bind(this), { passive: true, once: true });
 		this.player.queue.setQueue([]);
 		this.openState = false;
+		this.player.stop();
 	}
 
 	songMenuClick(type: songMenuClickTypes) {

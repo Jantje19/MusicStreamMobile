@@ -12,6 +12,10 @@ header > mat-toolbar > div {
     justify-content: flex-end;
 }
 
+hr {
+	border: .5px solid #9e9e9e;
+}
+
 .sort-radio-group {
   display: flex;
   margin: 0 1rem;

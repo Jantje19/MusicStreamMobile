@@ -147,8 +147,11 @@
 	padding: 0;
 	width: 3rem;
 	height: 3rem;
+	display: flex;
 	min-width: unset;
+    align-items: center;
 	border-radius: 100%;
+    justify-content: center;
 }
 
 :host > div > div#content > div#bottom-sheet > div#controls > div > button mat-icon {
