@@ -155,10 +155,12 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	shuffleQueue() {
-		this.shuffleElem.nativeElement.setAttribute('fade', false);
+		// @ts-ignore
+		this.shuffleElem._elementRef.nativeElement.setAttribute('fade', false);
 		this.player.queue.shuffle();
 		setTimeout(() => {
-			this.shuffleElem.nativeElement.setAttribute('fade', true);
+			// @ts-ignore
+			this.shuffleElem._elementRef.nativeElement.setAttribute('fade', true);
 		}, 500);
 	}
 

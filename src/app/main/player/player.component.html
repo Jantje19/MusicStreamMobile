@@ -33,7 +33,7 @@
 					</button>
 					<mat-icon matRipple role="button" aria-label="Next song icon" (click)="player.next()">skip_next</mat-icon>
 				</div>
-				<mat-icon #shufflebutton id="shuffleButton" matRipple role="button" aria-label="Shuffle icon" (click)="shuffleQueue()" [attr.fade]="true">shuffle</mat-icon>
+				<mat-icon #shufflebutton matRipple role="button" aria-label="Shuffle icon" (click)="shuffleQueue()" [attr.fade]="true">shuffle</mat-icon>
 			</div>
 			<mat-menu #songmenu="matMenu">
 				<button matRipple mat-menu-item (click)="songMenuClick(songMenuClickTypes.PLAY_NEXT)">Play next</button>
