@@ -83,6 +83,7 @@ export class PlayerComponent implements AfterViewInit {
 			this.curTimeElem.nativeElement.innerText = Player.convertToReadableTime(currentTime);
 			this.seekbarElem.nativeElement.value = percentage;
 		});
+
 		// Queue scroll
 		(function () {
 			let index = this.player.queue.index + 1;
@@ -113,6 +114,14 @@ export class PlayerComponent implements AfterViewInit {
 				}
 			});
 		}).bind(this)();
+
+		// Back button fix
+		window.addEventListener('hashchange', () => {
+			if (window.location.hash.length <= 1)
+				this.close();
+		});
+		if (window.location.hash.toLowerCase() === '#player')
+			window.location.hash = '';
 	}
 
 	ngAfterViewInit() {
@@ -132,11 +141,15 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	open(): void {
-		if (this.player.queue.length > 0)
+		if (this.player.queue.length > 0) {
+			window.location.hash = 'player';
 			this.openState = true;
+		}
 	}
 
 	close(): void {
+		// window.history.pushState("", document.title, window.location.pathname + window.location.search);
+		window.location.hash = '';
 		this.openState = false;
 	}
 
