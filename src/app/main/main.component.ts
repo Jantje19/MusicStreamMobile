@@ -187,6 +187,11 @@ export class MainComponent {
 		window.location.href = '/';
 	}
 
+	allSongs2Queue() {
+		this.player.emptyQueue();
+		this.player.player.queue.enqueue(this.songs);
+	}
+
 	private getPlaylist(name: string): Promise<Song[]> {
 		return new Promise((resolve, reject) => {
 			this.http.get(environment.apiUrl + '/playlist/' + name)

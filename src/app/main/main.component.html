@@ -6,6 +6,7 @@
 				<button mat-menu-item matRipple routerLink="videos">Video's</button>
 				<button mat-menu-item matRipple (click)="updateLibrary()">Update library</button>
 				<button mat-menu-item [matMenuTriggerFor]="mainMenuSort">Song sort</button>
+				<button mat-menu-item (click)="allSongs2Queue()">Add all songs to queue</button>
 				<hr>
 				<button mat-menu-item matRipple (click)="useDesktop()">Desktop site</button>
 			</mat-menu>
@@ -38,7 +39,7 @@
 							<button mat-menu-item matRipple (click)="songMenuClick(songMenuClickTypes.EDIT_TAGS)">Edit tags</button>
 						</mat-menu>
 
-						<ul *ngIf="songs.length > 0">
+						<ul (swipeleft)="swipeHandler($event.type)" (swiperight)="swipeHandler($event.type)" *ngIf="songs.length > 0">
 							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs">
 								<span>{{ song }}</span>
 								<mat-icon [matMenuTriggerFor]="songsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
@@ -64,7 +65,7 @@
 							<button mat-menu-item matRipple (click)="playlistMenuClick(playlistMenuClickTypes.PLAY_NEXT)">Play next</button>
 						</mat-menu>
 
-						<ul *ngIf="playlists.length > 0">
+						<ul (swipeleft)="swipeHandler($event.type)" (swiperight)="swipeHandler($event.type)" *ngIf="playlists.length > 0">
 							<li matRipple matRippleColor="#bdbdbd60" *ngFor="let playlist of playlists" (click)="playlistClick($event, playlist)">
 								<span>{{ playlist }}</span>
 								<mat-icon [matMenuTriggerFor]="playlistsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
