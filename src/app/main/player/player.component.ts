@@ -24,6 +24,7 @@ export class PlayerComponent implements AfterViewInit {
 
 	selectedMenuItem: Song;
 
+	private metaColorTag: HTMLMetaElement;
 	public player: Player;
 
 	@ViewChild('shufflebutton', { static: false }) shuffleElem: ElementRef;
@@ -44,6 +45,8 @@ export class PlayerComponent implements AfterViewInit {
 	constructor(http: HttpClient, private snackBar: MatSnackBar) {
 		const worker = new Worker('../../main-image-color.worker', { type: 'module' });
 		worker.onmessage = this.handleWorkerMessage.bind(this);
+
+		this.metaColorTag = document.querySelector('meta[name=theme-color]');
 
 		this.player = new Player(http);
 		this.player.songUpdate.subscribe(() => {
@@ -144,13 +147,22 @@ export class PlayerComponent implements AfterViewInit {
 		if (this.player.queue.length > 0) {
 			window.location.hash = 'player';
 			this.openState = true;
+
+			if (this.metaColorTag.hasAttribute('player-color')) {
+				const playerColor = this.metaColorTag.getAttribute('player-color');
+
+				this.changeThemeColor(playerColor);
+				return;
+			}
+
+			this.changeThemeColor('#273642');
 		}
 	}
 
 	close(): void {
-		// window.history.pushState("", document.title, window.location.pathname + window.location.search);
-		window.location.hash = '';
 		this.openState = false;
+		window.location.hash = '';
+		this.changeThemeColor('#16a085');
 	}
 
 	toggleQueue(evt): void {
@@ -262,12 +274,14 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	private handleWorkerMessage({ data }) {
+		const colorStr = `rgb(${data.r}, ${data.g}, ${data.b})`;
 		const elem = this.contentElem.nativeElement;
 
 		elem.style.setProperty('--background-color-darker', `rgb(${data.darker.r}, ${data.darker.g}, ${data.darker.b})`);
+		this.changeThemeColor(colorStr);
 
 		if (!('paintWorklet' in CSS))
-			elem.style.setProperty('--background-color', `rgb(${data.r}, ${data.g}, ${data.b})`);
+			elem.style.setProperty('--background-color', colorStr);
 		else {
 			const contentElem = this.contentElem.nativeElement;
 			const elem = this.sheetElem.nativeElement;
@@ -293,5 +307,13 @@ export class PlayerComponent implements AfterViewInit {
 		this.albumArt.nativeElement.style.backgroundImage = 'url(/mobile-assets/Record.png)';
 		this.contentElem.nativeElement.style.setProperty('--background-color', '#273642');
 		this.sheetElem.nativeElement.style.setProperty('--animation-tick', 0);
+		this.changeThemeColor('#273642');
+	}
+
+	private changeThemeColor(color: string) {
+		if (color !== '#16a085')
+			this.metaColorTag.setAttribute('player-color', color);
+
+		this.metaColorTag.setAttribute('content', color);
 	}
 }
