@@ -180,7 +180,7 @@ export class MainComponent {
 
 	sortChange() {
 		this.loadingState = true;
-		this.dataService.update(this.songSort);
+		this.dataService.update(this.songSort, true, true);
 	}
 
 	useDesktop() {
