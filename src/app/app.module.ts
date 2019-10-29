@@ -1,3 +1,4 @@
+import { SubtitleDialog } from './video/subtitle-dialog/subtitle-dialog.component';
 import { PlayerComponent } from './main/player/player.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MainComponent } from './main/main.component';
@@ -7,9 +8,13 @@ import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatRippleModule } from '@angular/material/core';
@@ -27,9 +32,10 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
 	declarations: [
 		AppComponent,
+		MainComponent,
+		SubtitleDialog,
 		VideoComponent,
 		PlayerComponent,
-		MainComponent,
 	],
 	imports: [
 		FormsModule,
@@ -41,17 +47,22 @@ import { FormsModule } from '@angular/forms';
 		MatListModule,
 		MatMenuModule,
 		MatRadioModule,
+		MatDialogModule,
+		MatSelectModule,
 		MatRippleModule,
 		MatButtonModule,
 		HttpClientModule,
 		AppRoutingModule,
 		MatToolbarModule,
+		MatDividerModule,
 		MatSnackBarModule,
 		MatExpansionModule,
+		MatFormFieldModule,
 		MatProgressBarModule,
 		BrowserAnimationsModule,
 		MatProgressSpinnerModule,
 	],
+	entryComponents: [SubtitleDialog],
 	providers: [],
 	bootstrap: [AppComponent]
 })

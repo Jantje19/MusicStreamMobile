@@ -45,12 +45,12 @@
 				<div matRipple role="button" (click)="toggleQueue($event)">
 					<div>
 						<mat-icon aria-label="Music icon">volume_up</mat-icon>
-						<div *ngIf="player.queue.selected.tagsFetched" title="{{ player.queue.selected.tags.title }}">
-							<p>{{ player.queue.selected.tags.title }}</p>
-							<span>{{ player.queue.selected.artistAlbumInfo }}</span>
+						<div *ngIf="getQueueSelected().tagsFetched" title="{{ getQueueSelected().tags.title }}">
+							<p>{{ getQueueSelected().tags.title }}</p>
+							<span>{{ getQueueSelected().artistAlbumInfo }}</span>
 						</div>
-						<div *ngIf="!player.queue.selected.tagsFetched" title="{{ player.queue.selected }}">
-							<p>{{ player.queue.selected.info }}</p>
+						<div *ngIf="!getQueueSelected().tagsFetched" title="{{ getQueueSelected() }}">
+							<p>{{ getQueueSelected().info }}</p>
 						</div>
 						<mat-icon matRipple role="button" aria-label="Overflow menu icon" [matMenuTriggerFor]="songmenu" #songmenuTrigger="matMenuTrigger">more_vert</mat-icon>
 					</div>

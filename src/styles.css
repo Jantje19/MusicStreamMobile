@@ -18,3 +18,33 @@ header>mat-toolbar mat-icon {
 	padding: .8rem;
 	border-radius: 100%;
 }
+
+ul {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow: hidden;
+	overflow-y: auto;
+	list-style-type: none;
+}
+
+ul>li {
+	display: flex;
+	overflow: hidden;
+	padding: .1rem 0;
+	padding-left: 1rem;
+	align-items: center;
+}
+
+ul>li>span {
+	flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+ul>li>mat-icon {
+	padding: 1rem;
+	border-radius: 100%;
+	align-self: flex-end;
+}

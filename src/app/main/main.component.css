@@ -12,10 +12,6 @@ header>mat-toolbar>div {
 	justify-content: flex-end;
 }
 
-hr {
-	border: .5px solid #9e9e9e;
-}
-
 .sort-radio-group {
 	display: flex;
 	margin: 0 1rem;
@@ -66,34 +62,4 @@ mat-icon#addPlaylistBtn {
 
 mat-icon#addPlaylistBtn[up=true] {
 	transform: translateY(-50px);
-}
-
-ul {
-	margin: 0;
-	padding: 0;
-	height: 100%;
-	overflow: hidden;
-	overflow-y: auto;
-	list-style-type: none;
-}
-
-ul>li {
-	display: flex;
-	overflow: hidden;
-	padding: .1rem 0;
-	padding-left: 1rem;
-	align-items: center;
-}
-
-ul>li>span {
-	flex: 1;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-ul>li>mat-icon {
-	padding: 1rem;
-	border-radius: 100%;
-	align-self: flex-end;
 }

@@ -51,10 +51,10 @@ export class MainComponent {
 
 		document.title = this.title;
 		this.dataService.update(this.songSort, false);
-		this.dataService.load.subscribe(({ songs, playlists, settings }) => {
-			this.songSortTypes = settings.audioDefaultSortType.options;
-			this.playlists = playlists;
-			this.songs = songs;
+		this.dataService.load.subscribe(() => {
+			this.songSortTypes = this.dataService.settings.audioDefaultSortType.options;
+			this.playlists = this.dataService.playlists;
+			this.songs = this.dataService.songs;
 
 			this.loadingState = false;
 		});
@@ -140,7 +140,8 @@ export class MainComponent {
 						else if (type === playlistMenuClickTypes.ADD_QUEUE)
 							this.player.player.queue.enqueue(songs);
 					})
-					.catch(() => {
+					.catch(err => {
+						console.error(err);
 						this.snackBar.open("Unable to get playlist information", null, {
 							duration: 3000
 						});

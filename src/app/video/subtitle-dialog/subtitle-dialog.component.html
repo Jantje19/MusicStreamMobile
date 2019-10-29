@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Select subtitle</h1>
+<div mat-dialog-content>
+	<mat-form-field *ngIf="subtitles.length > 0">
+		<mat-label>Server subtitle</mat-label>
+		<mat-select [(ngModel)]="selectValue">
+			<mat-option *ngFor="let subtitle of subtitles" [value]="subtitle">
+				{{ subtitle }}
+			</mat-option>
+		</mat-select>
+	</mat-form-field>
+
+	<mat-divider></mat-divider>
+
+	<div id="fileSelect" (click)="selectFile()">
+		<button mat-raised-button>Choose file</button>
+		<span>{{ selectedFileName }}</span>
+		<input (change)="fileSelectChange()" #fileInput type="file" />
+	</div>
+</div>
+<div mat-dialog-actions align="end">
+	<button mat-button (click)="selectClick()">Select</button>
+	<button mat-button (click)="cancelClick()" cdkFocusInitial>Cancel</button>
+</div>

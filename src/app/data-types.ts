@@ -15,12 +15,22 @@ enum SWIPE_ACTION {
 	UP = 'swipeup'
 }
 
-class Song {
-	private _tagsFetched = false;
+class MediaType {
 
 	get name() {
 		return this._name;
 	}
+
+	constructor(protected _name: string) { }
+
+	public toString(): string {
+		return this._name;
+	}
+}
+
+class Song extends MediaType {
+	private _tagsFetched = false;
+
 	get tags() {
 		return this._tags;
 	}
@@ -39,7 +49,7 @@ class Song {
 	}
 
 	constructor(
-		private _name: string,
+		name: string,
 		private _tags: {
 			title: string,
 			artist: string,
@@ -51,7 +61,9 @@ class Song {
 				album: "",
 				image: null
 			}
-	) { }
+	) {
+		super(name);
+	}
 
 	public fetchTags(http: HttpClient): Promise<{
 		title: string,
@@ -78,9 +90,11 @@ class Song {
 			});
 		}
 	}
+}
 
-	public toString(): string {
-		return this._name;
+class Video extends MediaType {
+	constructor(name: string) {
+		super(name);
 	}
 }
 
@@ -102,42 +116,47 @@ class Playlist {
 
 class Player {
 	public repeatState: repeatMode = repeatMode.UNSET;
-	private audio: HTMLAudioElement;
 	public queue: Queue;
 
 	get playing(): boolean {
-		return !this.audio.paused;
+		return !this.mediaElem.paused;
 	}
 
 	@Output() timeUpdate = new EventEmitter<{ percentage: number, currentTime: number, duration: number }>();
 	@Output() songUpdate = new EventEmitter<boolean>();
 
-	constructor(private http: HttpClient) {
-		this.audio = new Audio();
+	constructor(
+		private mediaElem: HTMLAudioElement | HTMLVideoElement,
+		private http: HttpClient
+	) {
 		this.queue = new Queue();
 
-		this.audio.ontimeupdate = () => {
-			this.timeUpdate.emit({
-				percentage: this.audio.currentTime / this.audio.duration * 100,
-				currentTime: this.audio.currentTime,
-				duration: this.audio.duration
-			});
+		if (this.mediaElem instanceof HTMLAudioElement) {
+			this.mediaElem.ontimeupdate = () => {
+				this.timeUpdate.emit({
+					percentage: this.mediaElem.currentTime / this.mediaElem.duration * 100,
+					currentTime: this.mediaElem.currentTime,
+					duration: this.mediaElem.duration
+				});
+			}
 		}
 
-		this.audio.onplaying = this.update;
-		this.audio.onpause = this.update;
-		this.audio.onended = () => {
-			this.http
-				.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
-				.subscribe((data: { success: boolean, data: any, error: any }) => {
-					if (data.success)
-						console.log(data.data);
-					else
-						console.error(data.error);
-				}, console.error);
+		this.mediaElem.onplaying = this.update;
+		this.mediaElem.onpause = this.update;
+		this.mediaElem.onended = () => {
+			if (this.mediaElem instanceof HTMLAudioElement) {
+				this.http
+					.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
+					.subscribe((data: { success: boolean, data: any, error: any }) => {
+						if (data.success)
+							console.log(data.data);
+						else
+							console.error(data.error);
+					}, console.error);
+			}
 
 			if (this.repeatState === repeatMode.ONE)
-				this.audio.play();
+				this.mediaElem.play();
 			else if (this.queue.index < this.queue.length - 1) {
 				this.queue.index++;
 				this.play();
@@ -163,25 +182,28 @@ class Player {
 
 	stop(): Player {
 		this.pause();
-		this.audio.currentTime = 0;
-		this.audio.src = "";
+		this.mediaElem.currentTime = 0;
+		this.mediaElem.src = "";
 		return this;
 	}
 
 	pause(): Player {
-		this.audio.pause();
+		this.mediaElem.pause();
 		return this;
 	}
 
 	play(): Player {
-		if (unescape(this.audio.src).includes(this.queue.selected.name)) {
-			this.audio.play();
+		if (unescape(this.mediaElem.src).includes(this.queue.selected.name)) {
+			this.mediaElem.play();
 			this.update();
 		} else {
-			this.audio.src = environment.apiUrl + '/song/' + this.queue.selected.name;
-			const returnVal = this.audio.play();
+			this.mediaElem.src = environment.apiUrl +
+				((this.mediaElem instanceof HTMLAudioElement) ? '/song/' : '/video/')
+				+ this.queue.selected.name;
+
+			const returnVal = this.mediaElem.play();
 			const fetchTags = () => {
-				this.queue.selected
+				(<Song>this.queue.selected)
 					.fetchTags(this.http)
 					.then(this.update.bind(this))
 					.catch(console.error);
@@ -190,11 +212,15 @@ class Player {
 			if (returnVal.then) {
 				returnVal.then(() => {
 					this.update();
-					fetchTags();
+
+					if (this.mediaElem instanceof HTMLAudioElement)
+						fetchTags();
 				}).catch(console.error);
 			} else {
 				this.update();
-				fetchTags();
+
+				if (this.mediaElem instanceof HTMLAudioElement)
+					fetchTags();
 			}
 		}
 
@@ -203,28 +229,26 @@ class Player {
 
 	toggle(): Player {
 		if (this.playing)
-			this.pause();
+			return this.pause();
 		else
-			this.play();
-
-		return this;
+			return this.play();
 	}
 
 	seek(percentage: number): Player {
-		if (percentage >= 0 && percentage <= 100 && !Number.isNaN(this.audio.duration))
-			this.audio.currentTime = this.audio.duration / 100 * percentage;
+		if (percentage >= 0 && percentage <= 100 && !Number.isNaN(this.mediaElem.duration))
+			this.mediaElem.currentTime = this.mediaElem.duration / 100 * percentage;
 
 		return this;
 	}
 
 	skipXSeconds(seconds: number = 5): Player {
-		this.audio.currentTime += seconds;
+		this.mediaElem.currentTime += seconds;
 		return this;
 	}
 
 	next(): Player {
 		if (this.repeatState === repeatMode.ONE)
-			this.audio.currentTime = 0;
+			this.mediaElem.currentTime = 0;
 		else if (this.queue.index < this.queue.length - 1)
 			this.queue.next();
 		else if (this.repeatState === repeatMode.QUEUE)
@@ -235,11 +259,11 @@ class Player {
 	}
 
 	previous(): Player {
-		if (this.audio.currentTime >= 5)
-			this.audio.currentTime = 0;
+		if (this.mediaElem.currentTime >= 5)
+			this.mediaElem.currentTime = 0;
 		else {
 			if (this.repeatState === repeatMode.ONE)
-				this.audio.currentTime = 0;
+				this.mediaElem.currentTime = 0;
 			else if (this.queue.index > 0)
 				this.queue.previous();
 			else if (this.repeatState === repeatMode.QUEUE)
@@ -288,29 +312,33 @@ class Player {
 		// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
 		navigator.mediaSession.playbackState = this.playing ? "playing" : "paused";
 
-		if (this.audio) {
-			// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
-			navigator.mediaSession.metadata = new MediaMetadata({
-				title: this.queue.selected.tags.title || this.queue.selected.info,
-				artist: this.queue.selected.tags.artist || "MusicStream",
-				album: this.queue.selected.tags.album || "",
-				artwork: [
-					{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-					{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-					{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-					{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
-					{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
-					{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-				]
-			});
+		if (this.mediaElem) {
+			if (this.mediaElem instanceof HTMLAudioElement) {
+				const selected = <Song>this.queue.selected;
 
-			this.songUpdate.emit(this.audio.ended);
+				// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: selected.tags.title || selected.info,
+					artist: selected.tags.artist || "MusicStream",
+					album: selected.tags.album || "",
+					artwork: [
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+					]
+				});
+
+				this.songUpdate.emit(this.mediaElem.ended);
+			}
 		}
 	}
 }
 
 class Queue {
-	private _list: Song[] = [];
+	private _list: MediaType[] = [];
 	private _index: number = 0;
 
 	@Output() update = new EventEmitter();
@@ -324,40 +352,43 @@ class Queue {
 			this.update.emit();
 		}
 
-		document.title = (this.selected ? ' - ' + this.selected.info : '') + "MusicStream";
+		document.title = (
+			this.selected && this.selected instanceof Song ?
+				' - ' + this.selected.info : ''
+		) + "MusicStream";
 	}
 
-	get list(): Song[] {
+	get list(): MediaType[] {
 		return this._list;
 	}
 	get length(): number {
 		return this._list.length;
 	}
-	get selected(): Song {
+	get selected(): MediaType {
 		return this._list[this._index];
 	}
 
-	public enqueue(song: Song | Song[]) {
-		if (Array.isArray(song))
-			this._list.push(...song);
+	public enqueue(media: MediaType | MediaType[]) {
+		if (Array.isArray(media))
+			this._list.push(...media);
 		else
-			this._list.push(song);
+			this._list.push(media);
 
 		this.update.emit();
 	}
 
-	public setQueue(songs: Song[]) {
-		this._list = songs;
+	public setQueue(media: MediaType[]) {
+		this._list = media;
 		this.index = 0;
 
 		this.update.emit();
 	}
 
-	public addNext(song: Song | Song[]) {
-		if (Array.isArray(song))
-			this._list.splice(this.index + 1, 0, ...song);
+	public addNext(media: MediaType | MediaType[]) {
+		if (Array.isArray(media))
+			this._list.splice(this.index + 1, 0, ...media);
 		else
-			this._list.splice(this.index + 1, 0, song);
+			this._list.splice(this.index + 1, 0, media);
 	}
 
 	public next(): Queue {
@@ -391,7 +422,7 @@ class Queue {
 		this._list.splice(index, 1);
 	}
 
-	private shuffleArray(array: Song[]): Song[] {
+	private shuffleArray(array: MediaType[]): MediaType[] {
 		let currentIndex = array.length, temporaryValue, randomIndex;
 
 		while (0 !== currentIndex) {
@@ -407,4 +438,4 @@ class Queue {
 	}
 }
 
-export { Song, Playlist, Player, Queue, repeatMode, SWIPE_ACTION };
+export { Song, Video, Playlist, Player, Queue, repeatMode, SWIPE_ACTION };

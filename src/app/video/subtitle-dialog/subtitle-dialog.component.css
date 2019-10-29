@@ -1,0 +1,15 @@
+mat-form-field, mat-form-field * {
+	width: 100%;
+}
+
+div#fileSelect {
+	padding: 1rem 0;
+}
+
+div#fileSelect>span {
+	margin-left: 1rem;
+}
+
+div#fileSelect>input[type=file] {
+	visibility: hidden;
+}

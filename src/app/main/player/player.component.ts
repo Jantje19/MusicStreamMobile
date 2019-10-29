@@ -48,9 +48,11 @@ export class PlayerComponent implements AfterViewInit {
 
 		this.metaColorTag = document.querySelector('meta[name=theme-color]');
 
-		this.player = new Player(http);
+		this.player = new Player(new Audio(), http);
 		this.player.songUpdate.subscribe(() => {
-			if (!this.player.queue.selected.tags.image) {
+			const selectedSong = <Song>this.player.queue.selected;
+
+			if (!selectedSong.tags.image) {
 				this.resetStyle();
 				this.handleWorkerMessage({
 					data: {
@@ -65,7 +67,7 @@ export class PlayerComponent implements AfterViewInit {
 					}
 				});
 			} else {
-				const blob = new Blob([new Uint8Array(this.player.queue.selected.tags.image.imageBuffer.data)], { type: 'image/png' });
+				const blob = new Blob([new Uint8Array(selectedSong.tags.image.imageBuffer.data)], { type: 'image/png' });
 				const blobUrl = URL.createObjectURL(blob);
 				const image = new Image();
 
@@ -167,14 +169,14 @@ export class PlayerComponent implements AfterViewInit {
 
 	toggleQueue(evt): void {
 		if (evt.target.nodeName.toLowerCase() === 'mat-icon')
-			this.selectedMenuItem = this.player.queue.selected;
+			this.selectedMenuItem = <Song>this.player.queue.selected;
 		else
 			this.queueState = !this.queueState;
 	}
 
 	getSongInfo(): string {
 		if (this.player.queue.selected)
-			return this.player.queue.selected.info;
+			return (<Song>this.player.queue.selected).info;
 		else
 			return "";
 	}
@@ -227,7 +229,7 @@ export class PlayerComponent implements AfterViewInit {
 
 	queueClick(evt, index: number) {
 		if (evt.target.nodeName.toLowerCase() === 'mat-icon')
-			this.selectedMenuItem = this.player.queue.list[index];
+			this.selectedMenuItem = <Song>this.player.queue.list[index];
 		else {
 			this.player.queue.index = index;
 			this.queueState = false;
@@ -271,6 +273,10 @@ export class PlayerComponent implements AfterViewInit {
 
 			this.selectedMenuItem = null;
 		}
+	}
+
+	getQueueSelected(): Song {
+		return <Song>this.player.queue.selected;
 	}
 
 	private handleWorkerMessage({ data }) {

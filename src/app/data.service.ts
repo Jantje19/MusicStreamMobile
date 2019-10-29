@@ -1,19 +1,23 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Song, Playlist, Video } from './data-types';
 import { HttpClient } from '@angular/common/http';
-import { Song, Playlist } from './data-types';
-import { MainComponent } from './main/main.component';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DataService {
-	private _playlists: Playlist[];
-	private _settings: {} = null;
-	private _songs: Song[];
+	private _playlists: Playlist[] = [];
+	private _subtitles: string[] = [];
+	private _videos: Video[] = [];
+	private _songs: Song[] = [];
+	private _settings: any = {};
 
 	get songs() {
 		return this._songs;
+	}
+	get videos() {
+		return this._videos;
 	}
 	get playlists() {
 		return this._playlists;
@@ -21,45 +25,63 @@ export class DataService {
 	get settings() {
 		return this._settings;
 	}
+	get subtitles() {
+		return this._subtitles;
+	}
 
-	@Output() load = new EventEmitter<{ songs: Song[], playlists: Playlist[], settings: {} }>();
 	@Output() error = new EventEmitter<Error>();
+	@Output() load = new EventEmitter<void>();
 
 	constructor(private http: HttpClient) { }
 
-	update(sortMethod: string, onlyData = true) {
-		const promiseArr = [
-			new Promise((resolve, reject) => {
+	update(sortMethod: string, onlyData = true, force = false) {
+		const promiseArr = [];
+		const addDataFetch = () => {
+			promiseArr.push(new Promise((resolve, reject) => {
 				this.http
 					.get(environment.apiUrl + '/data/?sort=' + sortMethod)
-					.subscribe(({ audio }: any) => {
+					.subscribe(({ audio, video }: any) => {
+						const { videos, subtitles } = video;
 						const { songs, playlists } = audio;
 
 						this._playlists = playlists.map(val => new Playlist(val));
 						this._songs = songs.map(val => new Song(val));
+						this._subtitles = subtitles;
 
-						resolve();
-					}, reject);
-			})
-		];
+						// TODO: Fix this
+						// Temporarily put them all in one array
+						Object.keys(videos).forEach(folder => {
+							this._videos.push(...videos[folder].map(vid => new Video(vid)));
+						});
 
-		if (!onlyData) {
-			promiseArr.push(new Promise((resolve, reject) => {
-				this.http
-					.get(environment.apiUrl + '/getSettings/')
-					.subscribe((settings: any) => {
-						this._settings = settings;
 						resolve();
 					}, reject);
 			}));
+
+			if (!onlyData) {
+				promiseArr.push(new Promise((resolve, reject) => {
+					this.http
+						.get(environment.apiUrl + '/getSettings/')
+						.subscribe((settings: any) => {
+							this._settings = settings;
+							resolve();
+						}, reject);
+				}));
+			}
 		}
 
-		Promise.all(promiseArr).then(() => {
-			this.load.emit({
-				playlists: this._playlists,
-				settings: this._settings,
-				songs: this._songs,
-			});
-		}).catch(this.error.emit.bind(this));
+		if (force === true || !(
+			Object.keys(this.settings).length > 0 ||
+			this.subtitles.length > 0 ||
+			this.videos.length > 0 ||
+			this.songs.length > 0
+		))
+			addDataFetch();
+
+		Promise.all(promiseArr)
+			.then(() => {
+				this.load.emit();
+			})
+			.catch(this.error.emit.bind(this));
 	}
 }
