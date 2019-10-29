@@ -1,10 +1,10 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { SubtitleDialog } from './subtitle-dialog/subtitle-dialog.component';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Video, Player, Queue } from '../data-types';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { Video, Player } from '../data-types';
 import { DataService } from '../data.service';
 
 enum videoMenuClickTypes {
@@ -27,12 +27,14 @@ export class VideoComponent implements AfterViewInit {
 	videoMenuClickTypes = videoMenuClickTypes;
 	selectedQueueMenuItem: number = null;
 	selectedVideoMenuItem: Video = null;
+	private tmpQueue = new Queue();
+	private loadingState = true;
 	subtitles: string[] = [];
 	videos: Video[] = [];
-	loadingState = true;
 	player: Player;
 
 	constructor(
+		private cd: ChangeDetectorRef,
 		private snackBar: MatSnackBar,
 		private dialog: MatDialog,
 		private http: HttpClient,
@@ -60,6 +62,18 @@ export class VideoComponent implements AfterViewInit {
 
 	ngAfterViewInit() {
 		this.player = new Player(this.videoElem.nativeElement, this.http);
+		this.cd.detectChanges();
+	}
+
+	isLoading() {
+		return this.loadingState === true && this.player !== undefined;
+	}
+
+	getQueue() {
+		if (this.player)
+			return this.player.queue;
+
+		return this.tmpQueue;
 	}
 
 	videoClick(evt, video: Video) {

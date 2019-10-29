@@ -11,29 +11,29 @@
 	</mat-toolbar>
 </header>
 
-<main [attr.loading]="loadingState">
+<main [attr.loading]="isLoading()">
 	<video #video controls></video>
 
-	<div *ngIf="loadingState">
+	<div *ngIf="isLoading()">
 		<mat-spinner color="accent" diameter="50"></mat-spinner>
 	</div>
 
-	<div *ngIf="!loadingState">
+	<div *ngIf="!isLoading()">
 		<mat-expansion-panel>
 			<mat-expansion-panel-header>
 				<mat-panel-title>Queue</mat-panel-title>
 				<mat-panel-description>
-					{{ player.queue.selected }}
+					{{ getQueue().selected }}
 				</mat-panel-description>
 			</mat-expansion-panel-header>
 
 			<mat-menu #queueMenu="matMenu">
 				<button matRipple mat-menu-item (click)="videoMenuClick(videoMenuClickTypes.REMOVE_QUEUE)">Remove from queue</button>
 			</mat-menu>
-			<ul *ngIf="player !== undefined && player.queue.length > 0" id="queue">
+			<ul *ngIf="getQueue().length > 0" id="queue">
 				<li matRipple matRippleColor="#bdbdbd60"
-					*ngFor="let video of player.queue.list; let i = index"
-					[attr.selected]="player.queue.index === i"
+					*ngFor="let video of getQueue().list; let i = index"
+					[attr.selected]="getQueue().index === i"
 					(click)="queueClick($event, i)">
 
 					<span>{{ i + 1}}</span>
