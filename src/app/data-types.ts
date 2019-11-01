@@ -289,6 +289,10 @@ class Player {
 		return isPlaying;
 	}
 
+	setPlaybackRate(value: number) {
+		this.mediaElem.playbackRate = value;
+	}
+
 	static convertToReadableTime(int: number): string {
 		if (Number.isNaN(int))
 			return '0:00';

@@ -1,6 +1,17 @@
 <header>
+	<mat-menu #playbackrateMenu="matMenu">
+		<mat-radio-group (change)="playbackrateChange()" [(ngModel)]="playbackRate" class="radio-group">
+			<mat-radio-button class="radio-button" value="0.5">0.50x</mat-radio-button>
+			<mat-radio-button class="radio-button" value="1">1.00x</mat-radio-button>
+			<mat-radio-button class="radio-button" value="1.25">1.25x</mat-radio-button>
+			<mat-radio-button class="radio-button" value="1.5">1.50x</mat-radio-button>
+			<mat-radio-button class="radio-button" value="1.75">1.75x</mat-radio-button>
+			<mat-radio-button class="radio-button" value="2">2.00x</mat-radio-button>
+		</mat-radio-group>
+	</mat-menu>
 	<mat-menu #headerMenu="matMenu">
 		<button mat-menu-item matRipple (click)="selectSubtitle()">Subtitles</button>
+		<button mat-menu-item matRipple [matMenuTriggerFor]="playbackrateMenu">Playback rate</button>
 	</mat-menu>
 
 	<mat-toolbar color="primary">

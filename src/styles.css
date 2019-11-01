@@ -48,3 +48,13 @@ ul>li>mat-icon {
 	border-radius: 100%;
 	align-self: flex-end;
 }
+
+.radio-group {
+	display: flex;
+	margin: 0 1rem;
+	flex-direction: column;
+}
+
+.radio-button {
+	margin: .8rem;
+}

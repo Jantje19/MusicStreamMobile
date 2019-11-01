@@ -12,16 +12,6 @@ header>mat-toolbar>div {
 	justify-content: flex-end;
 }
 
-.sort-radio-group {
-	display: flex;
-	margin: 0 1rem;
-	flex-direction: column;
-}
-
-.sort-radio-button {
-	margin: .8rem;
-}
-
 nav {
 	height: calc(100vh - 56px - 50px);
 }

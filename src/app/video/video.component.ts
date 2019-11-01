@@ -29,6 +29,7 @@ export class VideoComponent implements AfterViewInit {
 	selectedVideoMenuItem: Video = null;
 	private tmpQueue = new Queue();
 	private loadingState = true;
+	playbackRate: string = "1";
 	subtitles: string[] = [];
 	videos: Video[] = [];
 	player: Player;
@@ -148,5 +149,9 @@ export class VideoComponent implements AfterViewInit {
 				this.videoElem.nativeElement.appendChild(trackElem);
 			}
 		});
+	}
+
+	playbackrateChange() {
+		this.player.setPlaybackRate(parseFloat(this.playbackRate));
 	}
 }

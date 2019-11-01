@@ -11,8 +11,8 @@
 				<button mat-menu-item matRipple (click)="useDesktop()">Desktop site</button>
 			</mat-menu>
 			<mat-menu #mainMenuSort="matMenu">
-				<mat-radio-group (change)="sortChange()" [(ngModel)]="songSort" class="sort-radio-group">
-					<mat-radio-button class="sort-radio-button" *ngFor="let type of songSortTypes" [value]="type">
+				<mat-radio-group (change)="sortChange()" [(ngModel)]="songSort" class="radio-group">
+					<mat-radio-button class="radio-button" *ngFor="let type of songSortTypes" [value]="type">
 						{{ formatSortTypeString(type) }}
 					</mat-radio-button>
 				</mat-radio-group>
