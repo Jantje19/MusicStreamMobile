@@ -63,6 +63,9 @@ export class VideoComponent implements AfterViewInit {
 
 	ngAfterViewInit() {
 		this.player = new Player(this.videoElem.nativeElement, this.http);
+		this.player.queue.update.subscribe(() => {
+			this.cd.detectChanges();
+		});
 		this.cd.detectChanges();
 	}
 

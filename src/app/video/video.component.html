@@ -23,7 +23,7 @@
 </header>
 
 <main [attr.loading]="isLoading()">
-	<video #video controls></video>
+	<video #video controls controlsList="nodownload"></video>
 
 	<div *ngIf="isLoading()">
 		<mat-spinner color="accent" diameter="50"></mat-spinner>
