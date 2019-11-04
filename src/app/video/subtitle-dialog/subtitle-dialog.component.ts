@@ -6,7 +6,7 @@ import { Component, Inject, ElementRef, ViewChild } from '@angular/core';
 	templateUrl: 'subtitle-dialog.component.html',
 	selector: 'subtitle-dialog',
 })
-export class SubtitleDialog {
+export class SubtitleDialogComponent {
 
 	selectedFileName: string = "No file chosen";
 	selectValue: string;
@@ -14,8 +14,8 @@ export class SubtitleDialog {
 	@ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
 	constructor(
+		public dialogRef: MatDialogRef<SubtitleDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) public subtitles: string[],
-		public dialogRef: MatDialogRef<SubtitleDialog>,
 	) { }
 
 	cancelClick(): void {

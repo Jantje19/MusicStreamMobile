@@ -2,7 +2,7 @@
 	--header-height: 50px;
 }
 
-:host > div {
+:host>div {
 	left: 0;
 	margin: 0;
 	bottom: 0;
@@ -19,15 +19,15 @@
 	transform: translateY(calc(100% - var(--header-height)));
 }
 
-:host > div[open=true] {
+:host>div[open=true] {
 	transform: translateY(0px);
 }
 
-:host > div:not([hide=false]) {
+:host>div:not([hide=false]) {
 	transform: translateY(100%);
 }
 
-:host > div > div#header {
+:host>div>div#header {
 	display: flex;
 	cursor: pointer;
 	overflow: hidden;
@@ -37,7 +37,7 @@
 	height: calc(var(--header-height) - 2 * 10px);
 }
 
-:host > div > div#header > p {
+:host>div>div#header>p {
 	flex: 1;
 	margin: 0;
 	font-size: 1rem;
@@ -47,53 +47,78 @@
 	text-overflow: ellipsis;
 }
 
-:host > div > div#header > mat-icon {
+:host>div>div#header>mat-icon {
 	justify-self: right;
 }
 
-:host > div > div#content {
+:host>div>div#content {
 	--background-color-darker: #0e1c29;
 	--background-color: #273642;
-
 	height: 100%;
 	position: relative;
 	overscroll-behavior: none;
 	background-color: var(--background-color);
 }
 
-:host > div > div#content mat-icon {
+:host>div>div#content mat-icon {
 	padding: 1rem;
 	border-radius: 100%;
 }
 
-:host > div > div#content > div#album-art {
+:host>div>div#content>div#album-art {
 	width: 100%;
 	height: 60vh;
+	overflow: hidden;
 	position: relative;
 	background-size: cover;
 	background-color: inherit;
 	background-position: center;
 	background-repeat: no-repeat;
-	box-shadow: 0 0 50px rgba(0, 0, 0, 0.8) inset;
 	background-image: url('/mobile-assets/Record.png');
 }
 
-:host > div > div#content > div#album-art > mat-icon {
+:host>div>div#content>div#album-art:before {
+	top: 0;
+	left: -25%;
+	opacity: 1;
+	content: '';
+	width: 150%;
+	height: 130%;
+	display: block;
+	position: absolute;
+	will-change: opacity;
+	transition: opacity .3s ease;
+	box-shadow: 0 20px 100px 20px black inset;
+}
+
+:host>div>div#content>div#album-art:not([controls=true]):before {
+	opacity: 0;
+}
+
+:host>div>div#content>div#album-art>* {
 	top: 0;
 	right: 0;
-	padding: 1rem;
+	opacity: 1;
+	z-index: 1;
 	color: white;
 	cursor: pointer;
 	position: absolute;
 	border-radius: 100%;
+	will-change: opacity;
+	transition: opacity .3s ease;
 }
 
-:host > div > div#content > div#album-art > mat-icon:first-child {
+:host>div>div#content>div#album-art:not([controls=true])>* {
+	opacity: 0;
+	pointer-events: none;
+}
+
+:host>div>div#content>div#album-art>mat-icon {
 	left: 0;
 	right: unset;
 }
 
-:host > div > div#content > div#progress {
+:host>div>div#content>div#progress {
 	width: 100%;
 	display: grid;
 	color: white;
@@ -103,11 +128,11 @@
 	background-color: var(--background-color-darker);
 }
 
-:host > div > div#content > div#progress > span {
+:host>div>div#content>div#progress>span {
 	margin: 0 5px;
 }
 
-:host > div > div#content > div#bottom-sheet {
+:host>div>div#content>div#bottom-sheet {
 	width: 100%;
 	will-change: background-color;
 	height: calc(100vh - 20px - 60vh);
@@ -115,11 +140,11 @@
 	background-color: var(--background-color);
 }
 
-:host > div > div#content > div#bottom-sheet div.mat-ripple-element {
+:host>div>div#content>div#bottom-sheet div.mat-ripple-element {
 	display: none !important;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls {
+:host>div>div#content>div#bottom-sheet>div#controls {
 	z-index: 1;
 	display: flex;
 	color: white;
@@ -127,40 +152,39 @@
 	align-items: center;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls mat-icon {
+:host>div>div#content>div#bottom-sheet>div#controls mat-icon {
 	padding: 1rem;
 	border-radius: 100%;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls > mat-icon[fade=true] {
+:host>div>div#content>div#bottom-sheet>div#controls>mat-icon[fade=true] {
 	opacity: .5;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls > div {
+:host>div>div#content>div#bottom-sheet>div#controls>div {
 	flex: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls > div > button {
+:host>div>div#content>div#bottom-sheet>div#controls>div>button {
 	padding: 0;
 	width: 3rem;
 	height: 3rem;
 	display: flex;
 	min-width: unset;
-    align-items: center;
+	align-items: center;
 	border-radius: 100%;
-    justify-content: center;
+	justify-content: center;
 }
 
-:host > div > div#content > div#bottom-sheet > div#controls > div > button mat-icon {
+:host>div>div#content>div#bottom-sheet>div#controls>div>button mat-icon {
 	padding: 0;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue {
+:host>div>div#content>div#bottom-sheet>div#queue {
 	--header-height: calc(24px + (1rem * 2) + (.8rem * 2) + 1px);
-
 	width: 90%;
 	margin: auto;
 	z-index: 100;
@@ -173,22 +197,22 @@
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue[open=true] {
+:host>div>div#content>div#bottom-sheet>div#queue[open=true] {
 	transform: translateY(calc((100vh / 3) * -1 - var(--header-height)));
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div:last-child {
+:host>div>div#content>div#bottom-sheet>div#queue>div:last-child {
 	overflow: hidden;
 	overflow-y: auto;
 	overscroll-behavior: none;
 	height: calc(100% - var(--header-height));
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div:last-child > div[fade=true] {
+:host>div>div#content>div#bottom-sheet>div#queue>div:last-child>div[fade=true] {
 	opacity: .5;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div {
 	display: grid;
 	align-items: center;
 	padding: .8rem .5rem;
@@ -196,43 +220,41 @@
 	grid-template-columns: auto 1fr auto;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div:first-child {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div:first-child {
 	border-bottom: 1px solid #e0e0e0;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div > span {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div>span {
 	padding: 0;
 	width: 64px;
 	font-size: 1.2rem;
-    text-align: center;
+	text-align: center;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div > div {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div>div {
 	overflow: hidden;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > * {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div>div>* {
 	max-width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > p {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div>div>p {
 	margin: 0;
 	font-size: 1.1rem;
 }
 
-:host > div > div#content > div#bottom-sheet > div#queue > div > div > div > span {
+:host>div>div#content>div#bottom-sheet>div#queue>div>div>div>span {
 	font-size: .8rem;
 }
 
-
 @supports (background: paint(id)) {
-	:host > div > div#content > div#bottom-sheet {
+	:host>div>div#content>div#bottom-sheet {
 		--color: #273642;
 		--animation-tick: 0;
-
 		background-image: paint(ripple);
 	}
 }

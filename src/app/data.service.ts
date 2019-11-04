@@ -62,9 +62,13 @@ export class DataService {
 				promiseArr.push(new Promise((resolve, reject) => {
 					this.http
 						.get(environment.apiUrl + '/getSettings/')
-						.subscribe((settings: any) => {
-							this._settings = settings;
-							resolve();
+						.subscribe((resp: any) => {
+							if (!resp.success)
+								reject('Unable to fetch settings');
+							else {
+								this._settings = resp.data;
+								resolve();
+							}
 						}, reject);
 				}));
 			}

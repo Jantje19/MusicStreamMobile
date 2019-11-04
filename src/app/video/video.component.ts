@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { SubtitleDialog } from './subtitle-dialog/subtitle-dialog.component';
+import { SubtitleDialogComponent } from './subtitle-dialog/subtitle-dialog.component';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Video, Player, Queue } from '../data-types';
@@ -35,24 +35,24 @@ export class VideoComponent implements AfterViewInit {
 	player: Player;
 
 	constructor(
+		private dataService: DataService,
 		private cd: ChangeDetectorRef,
 		private snackBar: MatSnackBar,
 		private dialog: MatDialog,
 		private http: HttpClient,
-		dataService: DataService,
 	) {
 		// @ts-ignore
 		const songSort = sortMethod;
 
 		document.title = this.title;
-		dataService.update(songSort, false);
-		dataService.load.subscribe(() => {
-			this.subtitles = dataService.subtitles;
-			this.videos = dataService.videos;
+		this.dataService.update(songSort, false);
+		this.dataService.load.subscribe(() => {
+			this.subtitles = this.dataService.subtitles;
+			this.videos = this.dataService.videos;
 
 			this.loadingState = false;
 		});
-		dataService.error.subscribe((err: Error) => {
+		this.dataService.error.subscribe((err: Error) => {
 			this.loadingState = false;
 			this.snackBar.open('Unable to fetch the data...', null, {
 				duration: 3000
@@ -62,7 +62,7 @@ export class VideoComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this.player = new Player(this.videoElem.nativeElement, this.http);
+		this.player = new Player(this.videoElem.nativeElement, this.http, this.dataService.settings);
 		this.player.queue.update.subscribe(() => {
 			this.cd.detectChanges();
 		});
@@ -128,7 +128,7 @@ export class VideoComponent implements AfterViewInit {
 				object.remove();
 			});
 
-		this.dialog.open(SubtitleDialog, {
+		this.dialog.open(SubtitleDialogComponent, {
 			width: '350px',
 			data: this.subtitles
 		}).afterClosed().subscribe(result => {

@@ -1,20 +1,41 @@
-<div #container [attr.open]="openState" [attr.hide]="this.player.queue.length < 1">
+<div #container [attr.open]="isOpen" [attr.hide]="this.player.queue.length < 1">
 	<div id="header" (click)="open()" (swipeup)="swipeHandler($event.type)">
 		<p title="{{ getSongInfo() }}">{{ getSongInfo() }}</p>
 		<mat-icon [attr.aria-hidden]="openState" aria-label="Toggle icon">keyboard_arrow_up</mat-icon>
 	</div>
 	<div id="content" #content>
-		<div id="album-art" #albumart (swipedown)="swipeHandler($event.type)" (swipeleft)="swipeHandler($event.type)" (swiperight)="swipeHandler($event.type)">
+		<div
+			 (swiperight)="swipeHandler($event.type)"
+			 (click)="toggleAlbumartControls($event)"
+			 (swipedown)="swipeHandler($event.type)"
+			 (swipeleft)="swipeHandler($event.type)"
+			 [attr.controls]="showAlbumartControls"
+			 id="album-art"
+			 #albumart>
+
 			<mat-icon (click)="close()" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Close icon">
 				close
 			</mat-icon>
 
-			<mat-menu #contentMenu="matMenu">
-				<button matRipple mat-menu-item (click)="emptyQueue()">Empty queue</button>
-			</mat-menu>
-			<mat-icon [matMenuTriggerFor]="contentMenu" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Menu icon">
-				more_vert
-			</mat-icon>
+			<div>
+				<mat-icon
+						  *ngIf="player.queue.length > 0 && getQueueSelected().tagsFetched && getQueueSelected().tags.title && getQueueSelected().tags.artist"
+						  class="material-icons-outlined"
+						  [attr.aria-hidden]="!openState"
+						  aria-label="Lyrics icon"
+						  (click)="viewLyrics()"
+						  role="button"
+						  matRipple>
+					chat
+				</mat-icon>
+
+				<mat-menu #contentMenu="matMenu">
+					<button matRipple mat-menu-item (click)="emptyQueue()">Empty queue</button>
+				</mat-menu>
+				<mat-icon [matMenuTriggerFor]="contentMenu" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Menu icon">
+					more_vert
+				</mat-icon>
+			</div>
 		</div>
 		<div id="progress">
 			<span #curTime>0:00</span>

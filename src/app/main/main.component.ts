@@ -43,8 +43,8 @@ export class MainComponent {
 
 	constructor(
 		private dataService: DataService,
+		private snackBar: MatSnackBar,
 		private http: HttpClient,
-		private snackBar: MatSnackBar
 	) {
 		// @ts-ignore
 		this.songSort = sortMethod;

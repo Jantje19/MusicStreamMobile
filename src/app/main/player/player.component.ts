@@ -1,6 +1,9 @@
+import { LyricsDialogComponent } from '../lyrics-dialog/lyrics-dialog.component';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Player, repeatMode, SWIPE_ACTION, Song } from '../../data-types';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { DataService } from 'src/app/data.service';
 import { HttpClient } from '@angular/common/http';
 
 enum songMenuClickTypes {
@@ -16,16 +19,31 @@ enum songMenuClickTypes {
 	styleUrls: ['./player.component.css', './seekbarStyle.css']
 })
 export class PlayerComponent implements AfterViewInit {
-	queueState = false;
-	openState = false;
-
-	songMenuClickTypes = songMenuClickTypes;
-	repeatModes = repeatMode;
-
-	selectedMenuItem: Song;
-
 	private metaColorTag: HTMLMetaElement;
-	public player: Player;
+	private _showAlbumartControls = true;
+	private selectedMenuItem: Song;
+	private _queueState = false;
+	private _openState = false;
+	private _player: Player;
+
+	get isOpen(): boolean {
+		return this._openState;
+	}
+	get player() {
+		return this._player;
+	}
+	get queueState() {
+		return this._queueState;
+	}
+	get songMenuClickTypes() {
+		return songMenuClickTypes;
+	}
+	get repeatModes() {
+		return repeatMode;
+	}
+	get showAlbumartControls() {
+		return this._showAlbumartControls;
+	}
 
 	@ViewChild('shufflebutton', { static: false }) shuffleElem: ElementRef;
 	@ViewChild('bottomsheet', { static: false }) sheetElem: ElementRef;
@@ -38,17 +56,18 @@ export class PlayerComponent implements AfterViewInit {
 	@ViewChild('playbtn', { static: false }) playElem: ElementRef;
 	@ViewChild('queue', { static: false }) queueElem: ElementRef;
 
-	get isOpen(): boolean {
-		return this.openState;
-	}
-
-	constructor(http: HttpClient, private snackBar: MatSnackBar) {
+	constructor(
+		private snackBar: MatSnackBar,
+		private dialog: MatDialog,
+		dataService: DataService,
+		http: HttpClient,
+	) {
 		const worker = new Worker('../../main-image-color.worker', { type: 'module' });
 		worker.onmessage = this.handleWorkerMessage.bind(this);
 
 		this.metaColorTag = document.querySelector('meta[name=theme-color]');
 
-		this.player = new Player(new Audio(), http);
+		this._player = new Player(new Audio(), http, dataService.settings);
 		this.player.songUpdate.subscribe(() => {
 			const selectedSong = <Song>this.player.queue.selected;
 
@@ -87,6 +106,10 @@ export class PlayerComponent implements AfterViewInit {
 			this.durTimeElem.nativeElement.innerText = Player.convertToReadableTime(duration - currentTime);
 			this.curTimeElem.nativeElement.innerText = Player.convertToReadableTime(currentTime);
 			this.seekbarElem.nativeElement.value = percentage;
+		});
+		this.player.queue.update.subscribe(() => {
+			if (!this.isOpen)
+				window.location.hash = '';
 		});
 
 		// Queue scroll
@@ -137,7 +160,7 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	toggle(): boolean {
-		if (this.openState)
+		if (this.isOpen)
 			this.close();
 		else
 			this.open();
@@ -148,7 +171,7 @@ export class PlayerComponent implements AfterViewInit {
 	open(): void {
 		if (this.player.queue.length > 0) {
 			window.location.hash = 'player';
-			this.openState = true;
+			this._openState = true;
 
 			if (this.metaColorTag.hasAttribute('player-color')) {
 				const playerColor = this.metaColorTag.getAttribute('player-color');
@@ -162,7 +185,7 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	close(): void {
-		this.openState = false;
+		this._openState = false;
 		window.location.hash = '';
 		this.changeThemeColor('#16a085');
 	}
@@ -171,7 +194,7 @@ export class PlayerComponent implements AfterViewInit {
 		if (evt.target.nodeName.toLowerCase() === 'mat-icon')
 			this.selectedMenuItem = <Song>this.player.queue.selected;
 		else
-			this.queueState = !this.queueState;
+			this._queueState = !this.queueState;
 	}
 
 	getSongInfo(): string {
@@ -214,13 +237,13 @@ export class PlayerComponent implements AfterViewInit {
 				break;
 			case SWIPE_ACTION.DOWN:
 				if (type === 'queue')
-					this.queueState = false;
+					this._queueState = false;
 				else
 					this.close();
 				break;
 			case SWIPE_ACTION.UP:
 				if (type === 'queue')
-					this.queueState = true;
+					this._queueState = true;
 				else
 					this.open();
 				break;
@@ -232,7 +255,7 @@ export class PlayerComponent implements AfterViewInit {
 			this.selectedMenuItem = <Song>this.player.queue.list[index];
 		else {
 			this.player.queue.index = index;
-			this.queueState = false;
+			this._queueState = false;
 			this.player.play();
 		}
 	}
@@ -242,9 +265,11 @@ export class PlayerComponent implements AfterViewInit {
 			this.topElem.nativeElement.removeEventListener('transitionend', handler);
 			this.resetStyle();
 		}.bind(this), { passive: true, once: true });
-		this.player.queue.setQueue([]);
-		this.openState = false;
+
 		this.player.stop();
+		this._openState = false;
+		this._queueState = false;
+		this.player.queue.setQueue([]);
 	}
 
 	songMenuClick(type: songMenuClickTypes) {
@@ -277,6 +302,18 @@ export class PlayerComponent implements AfterViewInit {
 
 	getQueueSelected(): Song {
 		return <Song>this.player.queue.selected;
+	}
+
+	viewLyrics() {
+		this.dialog.open(LyricsDialogComponent, {
+			data: this.player.queue.selected,
+			width: '350px',
+		});
+	}
+
+	toggleAlbumartControls(evt) {
+		if (evt.target === evt.currentTarget)
+			this._showAlbumartControls = !this.showAlbumartControls;
 	}
 
 	private handleWorkerMessage({ data }) {

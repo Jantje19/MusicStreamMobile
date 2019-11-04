@@ -1,4 +1,5 @@
-import { SubtitleDialog } from './video/subtitle-dialog/subtitle-dialog.component';
+import { SubtitleDialogComponent } from './video/subtitle-dialog/subtitle-dialog.component';
+import { LyricsDialogComponent } from './main/lyrics-dialog/lyrics-dialog.component';
 import { PlayerComponent } from './main/player/player.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MainComponent } from './main/main.component';
@@ -33,9 +34,10 @@ import { FormsModule } from '@angular/forms';
 	declarations: [
 		AppComponent,
 		MainComponent,
-		SubtitleDialog,
 		VideoComponent,
 		PlayerComponent,
+		LyricsDialogComponent,
+		SubtitleDialogComponent,
 	],
 	imports: [
 		FormsModule,
@@ -62,7 +64,7 @@ import { FormsModule } from '@angular/forms';
 		BrowserAnimationsModule,
 		MatProgressSpinnerModule,
 	],
-	entryComponents: [SubtitleDialog],
+	entryComponents: [SubtitleDialogComponent, LyricsDialogComponent],
 	providers: [],
 	bootstrap: [AppComponent]
 })

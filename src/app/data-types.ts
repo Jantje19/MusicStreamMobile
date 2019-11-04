@@ -127,7 +127,8 @@ class Player {
 
 	constructor(
 		private mediaElem: HTMLAudioElement | HTMLVideoElement,
-		private http: HttpClient
+		private http: HttpClient,
+		private settings: any
 	) {
 		this.queue = new Queue();
 
@@ -144,7 +145,10 @@ class Player {
 		this.mediaElem.onplaying = this.update;
 		this.mediaElem.onpause = this.update;
 		this.mediaElem.onended = () => {
-			if (this.mediaElem instanceof HTMLAudioElement) {
+			if (
+				this.mediaElem instanceof HTMLAudioElement &&
+				this.settings.collectMostListened.val === true
+			) {
 				this.http
 					.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
 					.subscribe((data: { success: boolean, data: any, error: any }) => {

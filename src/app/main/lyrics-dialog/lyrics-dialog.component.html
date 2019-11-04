@@ -1,0 +1,16 @@
+<h1 mat-dialog-title id="title">
+	Lyrics &bull; {{ selectedSong.tags.title }}
+</h1>
+<mat-divider></mat-divider>
+<div mat-dialog-content id="content" [attr.loading]="loading">
+	<div *ngIf="loading">
+		<mat-spinner color="accent" diameter="50"></mat-spinner>
+	</div>
+
+	<p *ngIf="!loading">
+		{{ lyrics }}
+	</p>
+</div>
+<div mat-dialog-actions align="end">
+	<button mat-button (click)="close()" cdkFocusInitial>Close</button>
+</div>

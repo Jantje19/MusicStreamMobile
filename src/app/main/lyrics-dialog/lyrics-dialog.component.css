@@ -1,0 +1,24 @@
+#title {
+	overflow: hidden;
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#content {
+	overflow-y: auto;
+}
+
+#content[loading=true] {
+	overflow: hidden;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+#content[loading=true] mat-spinner {
+	margin: auto;
+}
+
+#content p {
+	white-space: pre-line;
+}
