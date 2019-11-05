@@ -2,9 +2,11 @@ import { SubtitleDialogComponent } from './video/subtitle-dialog/subtitle-dialog
 import { LyricsDialogComponent } from './main/lyrics-dialog/lyrics-dialog.component';
 import { PlayerComponent } from './main/player/player.component';
 import { BrowserModule } from '@angular/platform-browser';
+import { VideoComponent } from './video/video.component';
+import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
 import { AppComponent } from './app.component';
-import { NgModule } from '@angular/core';
+import { FilterPipe } from './filter.pipe';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -19,8 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatRippleModule } from '@angular/material/core';
-import { VideoComponent } from './video/video.component';
-import { AppRoutingModule } from './app-routing.module';
+import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule } from '@angular/common/http';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,9 +30,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
 
 @NgModule({
 	declarations: [
+		FilterPipe,
 		AppComponent,
 		MainComponent,
 		VideoComponent,
@@ -48,6 +51,7 @@ import { FormsModule } from '@angular/forms';
 		MatIconModule,
 		MatListModule,
 		MatMenuModule,
+		MatInputModule,
 		MatRadioModule,
 		MatDialogModule,
 		MatSelectModule,

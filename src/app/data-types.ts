@@ -340,6 +340,23 @@ class Player {
 				});
 
 				this.songUpdate.emit(this.mediaElem.ended);
+			} else if (this.mediaElem instanceof HTMLVideoElement) {
+				const selected = <Video>this.queue.selected;
+
+				// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
+				navigator.mediaSession.metadata = new MediaMetadata({
+					title: selected.name,
+					artist: "MusicStream",
+					album: "",
+					artwork: [
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
+						{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+					]
+				});
 			}
 		}
 	}
@@ -446,4 +463,4 @@ class Queue {
 	}
 }
 
-export { Song, Video, Playlist, Player, Queue, repeatMode, SWIPE_ACTION };
+export { Song, Video, MediaType, Playlist, Player, Queue, repeatMode, SWIPE_ACTION };

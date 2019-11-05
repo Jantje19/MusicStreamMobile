@@ -10,8 +10,18 @@
 		</mat-radio-group>
 	</mat-menu>
 	<mat-menu #headerMenu="matMenu">
-		<button mat-menu-item matRipple (click)="selectSubtitle()">Subtitles</button>
-		<button mat-menu-item matRipple [matMenuTriggerFor]="playbackrateMenu">Playback rate</button>
+		<button mat-menu-item matRipple (click)="selectSubtitle()">
+			<mat-icon>subtitles</mat-icon>
+			<span>Subtitles</span>
+		</button>
+		<button mat-menu-item matRipple [matMenuTriggerFor]="playbackrateMenu">
+			<mat-icon>speed</mat-icon>
+			<span>Playback rate</span>
+		</button>
+		<button mat-menu-item matRipple (click)="requestPiP()" *ngIf="pictureInPictureEnabled">
+			<mat-icon>picture_in_picture_alt</mat-icon>
+			<span>Display Picture-in-Picture</span>
+		</button>
 	</mat-menu>
 
 	<mat-toolbar color="primary">
@@ -33,7 +43,7 @@
 		<mat-expansion-panel>
 			<mat-expansion-panel-header>
 				<mat-panel-title>Queue</mat-panel-title>
-				<mat-panel-description>
+				<mat-panel-description id="expansion-description">
 					{{ getQueue().selected }}
 				</mat-panel-description>
 			</mat-expansion-panel-header>

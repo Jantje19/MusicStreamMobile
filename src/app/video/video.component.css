@@ -38,6 +38,12 @@ main>div mat-expansion-panel {
 	background-color: #e0e0e0;
 }
 
+main>div #expansion-description {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 main>div ul#queue>li[selected=true] {
 	background-color: rgba(0, 0, 0, .2);
 }

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ViewChild, ViewChildren, ElementRef } from '@angular/core';
 import { Song, Playlist, SWIPE_ACTION } from '../data-types';
 import { PlayerComponent } from './player/player.component';
 import { environment } from 'src/environments/environment';
@@ -27,19 +27,46 @@ enum playlistMenuClickTypes {
 export class MainComponent {
 	public title = 'MusicStream - BETA';
 
-	@ViewChild(PlayerComponent, { static: false }) player: PlayerComponent;
-	@ViewChildren(MatTab) tabs;
+	@ViewChild(PlayerComponent, { static: false }) private _player: PlayerComponent;
+	@ViewChild('searchInp', { static: false }) private searchInp: ElementRef;
+	@ViewChildren(MatTab) private tabs;
 
-	playlistMenuClickTypes = playlistMenuClickTypes;
-	songMenuClickTypes = songMenuClickTypes;
-	selectedPlaylistMenuItem: Playlist;
-	playlists: Playlist[] = [];
-	selectedSongMenuItem: Song;
-	songSort: string = null;
+	private selectedPlaylistMenuItem: Playlist;
+	private _playlists: Playlist[] = [];
+	private selectedSongMenuItem: Song;
+	private _songSort: string = null;
+	private _loadingState = true;
+	private _songSortTypes = [];
+	private _songs: Song[] = [];
+
 	selectedTabIndex = 0;
-	loadingState = true;
-	songSortTypes = [];
-	songs: Song[] = [];
+	isSearching = false;
+	searchValue = "";
+
+	get songs() {
+		return this._songs;
+	}
+	get player() {
+		return this._player;
+	}
+	get playlists() {
+		return this._playlists;
+	}
+	get songSort() {
+		return this._songSort;
+	}
+	get loadingState() {
+		return this._loadingState;
+	}
+	get songSortTypes() {
+		return this._songSortTypes;
+	}
+	get playlistMenuClickTypes() {
+		return playlistMenuClickTypes;
+	}
+	get songMenuClickTypes() {
+		return songMenuClickTypes;
+	}
 
 	constructor(
 		private dataService: DataService,
@@ -47,19 +74,19 @@ export class MainComponent {
 		private http: HttpClient,
 	) {
 		// @ts-ignore
-		this.songSort = sortMethod;
+		this._songSort = sortMethod;
 
 		document.title = this.title;
 		this.dataService.update(this.songSort, false);
 		this.dataService.load.subscribe(() => {
-			this.songSortTypes = this.dataService.settings.audioDefaultSortType.options;
-			this.playlists = this.dataService.playlists;
-			this.songs = this.dataService.songs;
+			this._songSortTypes = this.dataService.settings.audioDefaultSortType.options;
+			this._playlists = this.dataService.playlists;
+			this._songs = this.dataService.songs;
 
-			this.loadingState = false;
+			this._loadingState = false;
 		});
 		this.dataService.error.subscribe((err: Error) => {
-			this.loadingState = false;
+			this._loadingState = false;
 			this.snackBar.open('Unable to fetch the data...', null, {
 				duration: 3000
 			});
@@ -167,7 +194,7 @@ export class MainComponent {
 					this.snackBar.open("Successfully updated the library", "Update list", {
 						duration: 3000
 					}).onAction().subscribe(() => {
-						this.loadingState = true;
+						this._loadingState = true;
 						this.dataService.update(this.songSort);
 					});
 				}
@@ -179,7 +206,7 @@ export class MainComponent {
 	}
 
 	sortChange() {
-		this.loadingState = true;
+		this._loadingState = true;
 		this.dataService.update(this.songSort, true, true);
 	}
 
@@ -191,6 +218,19 @@ export class MainComponent {
 	allSongs2Queue() {
 		this.player.emptyQueue();
 		this.player.player.queue.enqueue(this.songs);
+	}
+
+	setSearching(value: boolean) {
+		this.isSearching = value;
+
+		if (!value)
+			this.searchValue = "";
+		else {
+			setTimeout(() => {
+				if (this.searchInp)
+					this.searchInp.nativeElement.focus();
+			}, 100);
+		}
 	}
 
 	private getPlaylist(name: string): Promise<Song[]> {

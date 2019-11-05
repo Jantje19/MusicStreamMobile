@@ -24,15 +24,34 @@ export class VideoComponent implements AfterViewInit {
 
 	@ViewChild('video', { static: false }) videoElem: ElementRef;
 
-	videoMenuClickTypes = videoMenuClickTypes;
-	selectedQueueMenuItem: number = null;
-	selectedVideoMenuItem: Video = null;
+	private selectedQueueMenuItem: number = null;
+	private selectedVideoMenuItem: Video = null;
+	private _playbackRate: string = "1";
 	private tmpQueue = new Queue();
 	private loadingState = true;
-	playbackRate: string = "1";
-	subtitles: string[] = [];
-	videos: Video[] = [];
-	player: Player;
+	private _subtitles: string[] = [];
+	private _videos: Video[] = [];
+	private _player: Player;
+
+	get player() {
+		return this._player;
+	}
+	get videos() {
+		return this._videos;
+	}
+	get subtitles() {
+		return this._subtitles;
+	}
+	get playbackRate() {
+		return this._playbackRate;
+	}
+	get pictureInPictureEnabled() {
+		// @ts-ignore
+		return document.pictureInPictureEnabled;
+	}
+	get videoMenuClickTypes() {
+		return videoMenuClickTypes;
+	}
 
 	constructor(
 		private dataService: DataService,
@@ -47,8 +66,8 @@ export class VideoComponent implements AfterViewInit {
 		document.title = this.title;
 		this.dataService.update(songSort, false);
 		this.dataService.load.subscribe(() => {
-			this.subtitles = this.dataService.subtitles;
-			this.videos = this.dataService.videos;
+			this._subtitles = this.dataService.subtitles;
+			this._videos = this.dataService.videos;
 
 			this.loadingState = false;
 		});
@@ -62,7 +81,7 @@ export class VideoComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this.player = new Player(this.videoElem.nativeElement, this.http, this.dataService.settings);
+		this._player = new Player(this.videoElem.nativeElement, this.http, this.dataService.settings);
 		this.player.queue.update.subscribe(() => {
 			this.cd.detectChanges();
 		});
@@ -156,5 +175,23 @@ export class VideoComponent implements AfterViewInit {
 
 	playbackrateChange() {
 		this.player.setPlaybackRate(parseFloat(this.playbackRate));
+	}
+
+	requestPiP() {
+		const displayError = () => {
+			// This can have multiple different reasons: your browser rejected it, the video element was not yet loaded, the video was not playing, etc.
+			this.snackBar.open('Unable to display PiP', null, {
+				duration: 3000
+			});
+		}
+
+		if (this.videoElem) {
+			this.videoElem.nativeElement.requestPictureInPicture()
+				.catch(displayError);
+
+			return;
+		}
+
+		displayError();
 	}
 }

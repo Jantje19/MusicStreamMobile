@@ -12,6 +12,15 @@ header>mat-toolbar>div {
 	justify-content: flex-end;
 }
 
+header mat-toolbar#searchingToolbar {
+	padding: 0 .1rem;
+}
+
+header mat-toolbar#searchingToolbar mat-form-field {
+	margin: 0;
+	width: calc(100vw - (.8rem + 24px) - 2rem);
+}
+
 nav {
 	height: calc(100vh - 56px - 50px);
 }

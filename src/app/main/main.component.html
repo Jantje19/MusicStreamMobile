@@ -1,5 +1,5 @@
 <header>
-	<mat-toolbar color="primary">
+	<mat-toolbar *ngIf="!isSearching" color="primary">
 		<span>{{ title }}</span>
 		<div>
 			<mat-menu #mainMenu="matMenu">
@@ -17,8 +17,15 @@
 					</mat-radio-button>
 				</mat-radio-group>
 			</mat-menu>
-			<mat-icon [matMenuTriggerFor]="mainMenu" matRipple aria-hidden="false" aria-label="Overflow menu" role="button">more_vert</mat-icon>
+			<mat-icon matRipple [attr.aria-hidden]="isSearching" aria-label="Search icon" role="button" (click)="setSearching(true)">search</mat-icon>
+			<mat-icon [matMenuTriggerFor]="mainMenu" matRipple [attr.aria-hidden]="isSearching" aria-label="Overflow menu" role="button">more_vert</mat-icon>
 		</div>
+	</mat-toolbar>
+	<mat-toolbar *ngIf="isSearching" color="primary" id="searchingToolbar">
+		<mat-icon matRipple [attr.aria-hidden]="!isSearching" aria-label="Back icon" role="button" (click)="setSearching(false)">arrow_back</mat-icon>
+		<mat-form-field>
+			<input [(ngModel)]="searchValue" matInput #searchInp>
+		</mat-form-field>
 	</mat-toolbar>
 </header>
 
@@ -40,7 +47,7 @@
 						</mat-menu>
 
 						<ul *ngIf="songs.length > 0">
-							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs">
+							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs | filter:searchValue">
 								<span>{{ song }}</span>
 								<mat-icon [matMenuTriggerFor]="songsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
 							</li>
