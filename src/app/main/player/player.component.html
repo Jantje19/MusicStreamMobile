@@ -1,7 +1,7 @@
 <div #container [attr.open]="isOpen" [attr.hide]="this.player.queue.length < 1">
 	<div id="header" (click)="open()" (swipeup)="swipeHandler($event.type)">
 		<p title="{{ getSongInfo() }}">{{ getSongInfo() }}</p>
-		<mat-icon [attr.aria-hidden]="openState" aria-label="Toggle icon">keyboard_arrow_up</mat-icon>
+		<mat-icon [attr.aria-hidden]="isOpen" aria-label="Toggle icon">keyboard_arrow_up</mat-icon>
 	</div>
 	<div id="content" #content>
 		<div
@@ -13,7 +13,7 @@
 			 id="album-art"
 			 #albumart>
 
-			<mat-icon (click)="close()" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Close icon">
+			<mat-icon (click)="close()" matRipple role="button" [attr.aria-hidden]="!isOpen" aria-label="Close icon">
 				close
 			</mat-icon>
 
@@ -21,7 +21,7 @@
 				<mat-icon
 						  *ngIf="player.queue.length > 0 && getQueueSelected().tagsFetched && getQueueSelected().tags.title && getQueueSelected().tags.artist"
 						  class="material-icons-outlined"
-						  [attr.aria-hidden]="!openState"
+						  [attr.aria-hidden]="!isOpen"
 						  aria-label="Lyrics icon"
 						  (click)="viewLyrics()"
 						  role="button"
@@ -32,7 +32,7 @@
 				<mat-menu #contentMenu="matMenu">
 					<button matRipple mat-menu-item (click)="emptyQueue()">Empty queue</button>
 				</mat-menu>
-				<mat-icon [matMenuTriggerFor]="contentMenu" matRipple role="button" [attr.aria-hidden]="!openState" aria-label="Menu icon">
+				<mat-icon [matMenuTriggerFor]="contentMenu" matRipple role="button" [attr.aria-hidden]="!isOpen" aria-label="Menu icon">
 					more_vert
 				</mat-icon>
 			</div>

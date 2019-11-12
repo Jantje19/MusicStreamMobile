@@ -26,12 +26,13 @@ export class VideoComponent implements AfterViewInit {
 
 	private selectedQueueMenuItem: number = null;
 	private selectedVideoMenuItem: Video = null;
-	private _playbackRate: string = "1";
 	private tmpQueue = new Queue();
 	private loadingState = true;
 	private _subtitles: string[] = [];
 	private _videos: Video[] = [];
 	private _player: Player;
+
+	playbackRate: string = "1";
 
 	get player() {
 		return this._player;
@@ -41,9 +42,6 @@ export class VideoComponent implements AfterViewInit {
 	}
 	get subtitles() {
 		return this._subtitles;
-	}
-	get playbackRate() {
-		return this._playbackRate;
 	}
 	get pictureInPictureEnabled() {
 		// @ts-ignore

@@ -34,11 +34,11 @@ export class MainComponent {
 	private selectedPlaylistMenuItem: Playlist;
 	private _playlists: Playlist[] = [];
 	private selectedSongMenuItem: Song;
-	private _songSort: string = null;
 	private _loadingState = true;
 	private _songSortTypes = [];
 	private _songs: Song[] = [];
 
+	public songSort: string = null;
 	selectedTabIndex = 0;
 	isSearching = false;
 	searchValue = "";
@@ -51,9 +51,6 @@ export class MainComponent {
 	}
 	get playlists() {
 		return this._playlists;
-	}
-	get songSort() {
-		return this._songSort;
 	}
 	get loadingState() {
 		return this._loadingState;
@@ -74,7 +71,7 @@ export class MainComponent {
 		private http: HttpClient,
 	) {
 		// @ts-ignore
-		this._songSort = sortMethod;
+		this.songSort = sortMethod;
 
 		document.title = this.title;
 		this.dataService.update(this.songSort, false);
@@ -186,7 +183,7 @@ export class MainComponent {
 			});
 		}
 
-		this.http.get(environment.apiUrl + '/updateJSON/')
+		this.http.post(environment.apiUrl + '/updateJSON/', null)
 			.subscribe((data: any) => {
 				if (data.success !== true)
 					handleError();
