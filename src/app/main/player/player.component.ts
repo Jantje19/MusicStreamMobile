@@ -67,7 +67,7 @@ export class PlayerComponent implements AfterViewInit {
 
 		this.metaColorTag = document.querySelector('meta[name=theme-color]');
 
-		this._player = new Player(new Audio(), http, dataService.settings);
+		this._player = new Player(new Audio(), http, dataService);
 		this.player.songUpdate.subscribe(() => {
 			const selectedSong = <Song>this.player.queue.selected;
 

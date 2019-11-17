@@ -1,11 +1,18 @@
 header mat-toolbar {
+	--header-icon-width: calc(24px + .8rem * 2 + 10px);
 	margin: 0;
 	padding: 0;
 	display: grid;
 	align-items: center;
 	justify-items: center;
 	grid-template-rows: 100%;
-	grid-template-columns: 1fr auto 1fr;
+	grid-template-columns: var(--header-icon-width) auto var(--header-icon-width);
+}
+
+header mat-toolbar span {
+	width: 100%;
+	display: block;
+	text-align: left;
 }
 
 main {

@@ -11,12 +11,12 @@ enum songMenuClickTypes {
 	ADD_QUEUE = 'addToQueue',
 	PLAY_NEXT = 'playNext',
 	EDIT_TAGS = 'editTags',
-	PLAY = 'addToQueue',
+	PLAY = 'play',
 }
 enum playlistMenuClickTypes {
 	ADD_QUEUE = 'addToQueue',
 	PLAY_NEXT = 'playNext',
-	PLAY = 'addToQueue',
+	PLAY = 'play',
 }
 
 @Component({
@@ -129,16 +129,16 @@ export class MainComponent {
 	songMenuClick(type: songMenuClickTypes) {
 		if (this.selectedSongMenuItem) {
 			switch (type) {
-				case songMenuClickTypes.PLAY:
-					this.player.player.queue.enqueue(this.selectedSongMenuItem);
-					this.player.player.queue.index = this.player.player.queue.length - 1;
-					this.player.player.play();
-					break;
 				case songMenuClickTypes.PLAY_NEXT:
 					this.player.player.queue.addNext(this.selectedSongMenuItem);
 					break;
 				case songMenuClickTypes.ADD_QUEUE:
 					this.player.player.queue.enqueue(this.selectedSongMenuItem);
+					break;
+				case songMenuClickTypes.PLAY:
+					this.player.player.queue.enqueue(this.selectedSongMenuItem);
+					this.player.player.queue.index = this.player.player.queue.length - 1;
+					this.player.player.play();
 					break;
 				case songMenuClickTypes.EDIT_TAGS:
 					// TODO: Make this work

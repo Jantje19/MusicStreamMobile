@@ -79,7 +79,7 @@ export class VideoComponent implements AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this._player = new Player(this.videoElem.nativeElement, this.http, this.dataService.settings);
+		this._player = new Player(this.videoElem.nativeElement, this.http, this.dataService);
 		this.player.queue.update.subscribe(() => {
 			this.cd.detectChanges();
 		});
@@ -105,7 +105,7 @@ export class VideoComponent implements AfterViewInit {
 	}
 
 	videoMenuClick(type: videoMenuClickTypes) {
-		if (this.selectedVideoMenuItem) {
+		if (this.selectedVideoMenuItem || this.selectedQueueMenuItem !== null) {
 			switch (type) {
 				case videoMenuClickTypes.PLAY:
 					this.player.queue.enqueue(this.selectedVideoMenuItem);

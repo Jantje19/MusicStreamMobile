@@ -1,6 +1,7 @@
 import { environment } from 'src/environments/environment';
 import { Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DataService } from './data.service';
 
 enum repeatMode {
 	QUEUE,
@@ -76,16 +77,21 @@ class Song extends MediaType {
 			return new Promise((resolve, reject) => {
 				http
 					.get(environment.apiUrl + '/songInfo/' + this.name)
-					.subscribe((data: any) => {
-						this.tags.artist = data.artist;
-						this.tags.album = data.album;
-						this.tags.title = data.title;
-						this.tags.image = data.image;
+					.subscribe((json: any) => {
+						if (!json.success)
+							reject(json.error);
+						else {
+							const { tags } = json;
+							this.tags.artist = tags.artist;
+							this.tags.album = tags.album;
+							this.tags.title = tags.title;
+							this.tags.image = tags.image;
 
-						if (this.tags.title)
-							this._tagsFetched = true;
+							if (this.tags.title)
+								this._tagsFetched = true;
 
-						resolve(data);
+							resolve(tags);
+						}
 					}, reject);
 			});
 		}
@@ -128,7 +134,7 @@ class Player {
 	constructor(
 		private mediaElem: HTMLAudioElement | HTMLVideoElement,
 		private http: HttpClient,
-		private settings: any
+		dataService: DataService
 	) {
 		this.queue = new Queue();
 
@@ -146,8 +152,8 @@ class Player {
 		this.mediaElem.onpause = this.update;
 		this.mediaElem.onended = () => {
 			if (
-				this.mediaElem instanceof HTMLAudioElement &&
-				this.settings.collectMostListened.val === true
+				dataService.settings.collectMostListened.val === true &&
+				this.mediaElem instanceof HTMLAudioElement
 			) {
 				this.http
 					.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
