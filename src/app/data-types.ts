@@ -31,6 +31,7 @@ class MediaType {
 
 class Song extends MediaType {
 	private _tagsFetched = false;
+	private _downloaded = false;
 
 	get tags() {
 		return this._tags;
@@ -44,13 +45,16 @@ class Song extends MediaType {
 
 		return this.name.replace(/(\.\w+)$/, '');
 	}
-
 	get artistAlbumInfo(): string {
 		return [this.tags.artist, this.tags.album].filter(val => val).join(' • ');
+	}
+	get downloaded(): boolean {
+		return this._downloaded;
 	}
 
 	constructor(
 		name: string,
+		downloaded: boolean,
 		private _tags: {
 			title: string,
 			artist: string,
@@ -64,6 +68,8 @@ class Song extends MediaType {
 			}
 	) {
 		super(name);
+
+		this._downloaded = downloaded;
 	}
 
 	public fetchTags(http: HttpClient): Promise<{

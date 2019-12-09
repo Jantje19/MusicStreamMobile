@@ -2,11 +2,13 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Song, Playlist, Video } from './data-types';
 import { HttpClient } from '@angular/common/http';
+import SWHandler from './sw-handler';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DataService {
+	private swHandler: SWHandler;
 	private _playlists: Playlist[] = [];
 	private _subtitles: string[] = [];
 	private _videos: Video[] = [];
@@ -32,30 +34,17 @@ export class DataService {
 	@Output() error = new EventEmitter<Error>();
 	@Output() load = new EventEmitter<void>();
 
-	constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient) {
+		this.swHandler = new SWHandler();
+	}
 
 	update(sortMethod: string, onlyData = true, force = false) {
-		const promiseArr = [];
+		const promiseArr = [this.swHandler.getDownloaded()];
 		const addDataFetch = () => {
 			promiseArr.push(new Promise((resolve, reject) => {
 				this.http
 					.get(environment.apiUrl + '/data/?sort=' + sortMethod)
-					.subscribe(({ audio, video }: any) => {
-						const { videos, subtitles } = video;
-						const { songs, playlists } = audio;
-
-						this._playlists = playlists.map(val => new Playlist(val));
-						this._songs = songs.map(val => new Song(val));
-						this._subtitles = subtitles;
-
-						// TODO: Fix this
-						// Temporarily put them all in one array
-						Object.keys(videos).forEach(folder => {
-							this._videos.push(...videos[folder].map(vid => new Video(vid)));
-						});
-
-						resolve();
-					}, reject);
+					.subscribe(resolve, reject);
 			}));
 
 			if (!onlyData) {
@@ -83,7 +72,23 @@ export class DataService {
 			addDataFetch();
 
 		Promise.all(promiseArr)
-			.then(() => {
+			.then(([downloaded, dataObj]) => {
+				const { audio, video } = <any>dataObj;
+				const { videos, subtitles } = video;
+				const { songs, playlists } = audio;
+
+				this._subtitles = subtitles;
+				this._playlists = playlists.map(val => new Playlist(val));
+				this._songs = songs.map(val => {
+					return new Song(val, downloaded.songs.includes(val));
+				});
+
+				// TODO: Fix this
+				// Temporarily put them all in one array
+				Object.keys(videos).forEach(folder => {
+					this._videos.push(...videos[folder].map(vid => new Video(vid)));
+				});
+
 				this.load.emit();
 			})
 			.catch(this.error.emit.bind(this));

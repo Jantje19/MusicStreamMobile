@@ -47,8 +47,8 @@
 						</mat-menu>
 
 						<ul *ngIf="songs.length > 0">
-							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs | filter:searchValue">
-								<span>{{ song }}</span>
+							<li matRipple matRippleColor="#bdbdbd60" (click)="songClick($event, song)" *ngFor="let song of songs | filter:searchValue" [attr.downloaded]="song.downloaded">
+								<span>{{ song.downloaded ? '✔ ' : '' }}{{ song }}</span>
 								<mat-icon [matMenuTriggerFor]="songsMenu" matRippleColor="#bdbdbd60" role="button" aria-label="Overflow menu icon" matRipple>more_vert</mat-icon>
 							</li>
 						</ul>

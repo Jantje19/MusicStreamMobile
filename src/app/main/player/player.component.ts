@@ -317,14 +317,14 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	private handleWorkerMessage({ data }) {
-		const colorStr = `rgb(${data.r}, ${data.g}, ${data.b})`;
+		const colorDarkerStr = `rgb(${data.darker.r}, ${data.darker.g}, ${data.darker.b})`;
 		const elem = this.contentElem.nativeElement;
 
-		elem.style.setProperty('--background-color-darker', `rgb(${data.darker.r}, ${data.darker.g}, ${data.darker.b})`);
-		this.changeThemeColor(colorStr);
+		elem.style.setProperty('--background-color-darker', colorDarkerStr);
+		this.changeThemeColor(colorDarkerStr);
 
 		if (!('paintWorklet' in CSS))
-			elem.style.setProperty('--background-color', colorStr);
+			elem.style.setProperty('--background-color', `rgb(${data.r}, ${data.g}, ${data.b})`);
 		else {
 			const contentElem = this.contentElem.nativeElement;
 			const elem = this.sheetElem.nativeElement;
