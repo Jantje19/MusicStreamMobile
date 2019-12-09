@@ -1,5 +1,6 @@
 import { SubtitleDialogComponent } from './video/subtitle-dialog/subtitle-dialog.component';
 import { LyricsDialogComponent } from './main/lyrics-dialog/lyrics-dialog.component';
+import { BgsyncDialogComponent } from './main/bgsync-dialog/bgsync-dialog.component';
 import { PlayerComponent } from './main/player/player.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { VideoComponent } from './video/video.component';
@@ -41,6 +42,7 @@ import { NgModule } from '@angular/core';
 		PlayerComponent,
 		LyricsDialogComponent,
 		SubtitleDialogComponent,
+		BgsyncDialogComponent,
 	],
 	imports: [
 		FormsModule,
@@ -68,7 +70,7 @@ import { NgModule } from '@angular/core';
 		BrowserAnimationsModule,
 		MatProgressSpinnerModule,
 	],
-	entryComponents: [SubtitleDialogComponent, LyricsDialogComponent],
+	entryComponents: [SubtitleDialogComponent, LyricsDialogComponent, BgsyncDialogComponent],
 	providers: [],
 	bootstrap: [AppComponent]
 })

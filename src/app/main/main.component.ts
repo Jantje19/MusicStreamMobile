@@ -1,8 +1,10 @@
+import { BgsyncDialogComponent } from './bgsync-dialog/bgsync-dialog.component';
 import { Component, ViewChild, ViewChildren, ElementRef } from '@angular/core';
 import { Song, Playlist, SWIPE_ACTION } from '../data-types';
 import { PlayerComponent } from './player/player.component';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { MatTab } from '@angular/material/tabs';
 import { DataService } from '../data.service';
@@ -68,6 +70,7 @@ export class MainComponent {
 	constructor(
 		private dataService: DataService,
 		private snackBar: MatSnackBar,
+		private dialog: MatDialog,
 		private http: HttpClient,
 	) {
 		// @ts-ignore
@@ -228,6 +231,13 @@ export class MainComponent {
 					this.searchInp.nativeElement.focus();
 			}, 100);
 		}
+	}
+
+	viewBgSyncLog() {
+		this.dialog.open(BgsyncDialogComponent, {
+			data: this.player.bgSyncLogger,
+			width: '350px',
+		});
 	}
 
 	private getPlaylist(name: string): Promise<Song[]> {

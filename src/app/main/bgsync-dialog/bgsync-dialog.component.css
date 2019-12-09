@@ -1,0 +1,31 @@
+#content>i {
+	display: block;
+	margin: 1rem 0;
+	text-align: center;
+}
+
+#content>p>span {
+	width: 10px;
+	height: 10px;
+	margin-right: 1rem;
+	display: inline-block;
+	background-color: #f44336;
+}
+
+#content>p>span[bool=true] {
+	background-color: #4caf50;
+}
+
+#content>div {
+	overflow: auto;
+}
+
+#content>div>p {
+	margin: 0;
+	padding: 1rem 0;
+	white-space: nowrap;
+}
+
+#content>div>p:nth-child(even) {
+	background-color: rgba(0, 0, 0, 0.05);
+}

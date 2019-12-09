@@ -139,8 +139,9 @@ class Player {
 
 	constructor(
 		private mediaElem: HTMLAudioElement | HTMLVideoElement,
+		private bgSyncLogger: BackgroundsyncLogger = null,
 		private http: HttpClient,
-		dataService: DataService
+		dataService: DataService,
 	) {
 		this.queue = new Queue();
 
@@ -161,14 +162,33 @@ class Player {
 				dataService.settings.collectMostListened.val === true &&
 				this.mediaElem instanceof HTMLAudioElement
 			) {
-				this.http
-					.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
-					.subscribe((data: { success: boolean, data: any, error: any }) => {
-						if (data.success)
-							console.log(data.data);
-						else
-							console.error(data.error);
-					}, console.error);
+				const tryBgSync = async () => {
+					if (!('SyncManager' in window))
+						throw Error('SyncManager is not in window');
+
+					if (navigator.serviceWorker && navigator.serviceWorker.ready)
+						throw Error('No service worker available');
+
+					return await (await navigator.serviceWorker.ready).sync.register('updatemostlistened-' + this.queue.selected.name);
+				}
+
+				tryBgSync().then(() => {
+					this.bgSyncLogger.add(true, <Song>this.queue.selected);
+				}).catch(() => {
+					const handleError = err => {
+						this.bgSyncLogger.add(false, <Song>this.queue.selected, err);
+					}
+
+					this.http
+						.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
+						.subscribe((data: { success: boolean, data: any, error: any }) => {
+							if (data.success) {
+								this.bgSyncLogger.add(false, <Song>this.queue.selected);
+								console.log(data.data);
+							} else
+								handleError(data.error);
+						}, handleError);
+				});
 			}
 
 			if (this.repeatState === repeatMode.ONE)
@@ -475,4 +495,22 @@ class Queue {
 	}
 }
 
-export { Song, Video, MediaType, Playlist, Player, Queue, repeatMode, SWIPE_ACTION };
+class BackgroundsyncLogger {
+	private _log: string[] = [];
+
+	get log() {
+		return this._log;
+	}
+
+	public add(usedBgSync: boolean = false, song: Song, error: Error = null): Song {
+		if (error)
+			this._log.push(`(${(new Date()).toLocaleString()}):\t[Error] ${song.name} (${error})`);
+		else if (usedBgSync)
+			this._log.push(`(${(new Date()).toLocaleString()}):\t[Background Sync] ${song.name}`);
+		else
+			this._log.push(`(${(new Date()).toLocaleString()}):\t[Fallback method] ${song.name}`);
+		return song;
+	}
+}
+
+export { Song, Video, MediaType, Playlist, Player, Queue, BackgroundsyncLogger, repeatMode, SWIPE_ACTION };

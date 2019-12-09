@@ -4,33 +4,18 @@
 <head>
 	<meta charset="utf-8">
 	<title>MusicStream</title>
-	<!-- <base href="/mobile/"> -->
 	<base href="/">
 	<link rel="manifest" href="/manifest.json">
 	<meta name="theme-color" content="#16a085" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet" defer>
+	<script src="/mobile-assets/sw.js" type="module"></script>
 	<script>
 		const sortMethod = '{{audioDefaultSortType}}';
 
 		if ('paintWorklet' in CSS)
 			CSS.paintWorklet.addModule('/mobile-assets/ripple.js');
-	</script>
-	<script type="module">
-		// import { Workbox } from '/ServiceWorker/workbox/workbox-window.prod.mjs';
-		import { Workbox } from 'http://localhost:8000/ServiceWorker/workbox/workbox-window.prod.mjs';
-
-		if ('serviceWorker' in navigator) {
-			// const wb = new Workbox('/service-worker.js', { scope: '/mobile/' });
-			const wb = new Workbox('http://localhost:8000/service-worker.js', { scope: '/' });
-
-			wb.register().catch(console.error);
-			// TODO: Add this
-			/* wb.addEventListener('waiting', () => {
-
-			});*/
-		}
 	</script>
 </head>
 

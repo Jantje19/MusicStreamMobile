@@ -1,6 +1,6 @@
 import { LyricsDialogComponent } from '../lyrics-dialog/lyrics-dialog.component';
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Player, repeatMode, SWIPE_ACTION, Song } from '../../data-types';
+import { Player, repeatMode, SWIPE_ACTION, Song, BackgroundsyncLogger } from '../../data-types';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { DataService } from 'src/app/data.service';
@@ -19,6 +19,7 @@ enum songMenuClickTypes {
 	styleUrls: ['./player.component.css', './seekbarStyle.css']
 })
 export class PlayerComponent implements AfterViewInit {
+	public bgSyncLogger = new BackgroundsyncLogger();
 	private metaColorTag: HTMLMetaElement;
 	private _showAlbumartControls = true;
 	private selectedMenuItem: Song;
@@ -67,7 +68,7 @@ export class PlayerComponent implements AfterViewInit {
 
 		this.metaColorTag = document.querySelector('meta[name=theme-color]');
 
-		this._player = new Player(new Audio(), http, dataService);
+		this._player = new Player(new Audio(), this.bgSyncLogger, http, dataService);
 		this.player.songUpdate.subscribe(() => {
 			const selectedSong = <Song>this.player.queue.selected;
 
@@ -86,20 +87,24 @@ export class PlayerComponent implements AfterViewInit {
 					}
 				});
 			} else {
-				const blob = new Blob([new Uint8Array(selectedSong.tags.image.imageBuffer.data)], { type: 'image/png' });
-				const blobUrl = URL.createObjectURL(blob);
-				const image = new Image();
+				if ('imageBuffer' in selectedSong.tags.image) {
+					const blob = new Blob([new Uint8Array(selectedSong.tags.image.imageBuffer.data)], { type: 'image/png' });
+					const blobUrl = URL.createObjectURL(blob);
+					const image = new Image();
 
-				this.albumArt.nativeElement.style.backgroundImage = `url('${blobUrl}')`;
-				image.onload = () => {
-					worker.postMessage({ blob, width: image.width, height: image.height });
+					image.onload = () => {
+						worker.postMessage({ blob, width: image.width, height: image.height });
 
-					// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
-					navigator.mediaSession.metadata.artwork = [
-						{ src: blobUrl, sizes: `${image.width}x${image.height}`, type: 'image/png' }
-					];
+						// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
+						navigator.mediaSession.metadata.artwork = [
+							{ src: blobUrl, sizes: `${image.width}x${image.height}`, type: 'image/png' }
+						];
+					}
+					image.src = blobUrl;
+					selectedSong.tags.image = blobUrl;
 				}
-				image.src = blobUrl;
+
+				this.albumArt.nativeElement.style.backgroundImage = `url('${selectedSong.tags.image}')`;
 			}
 		});
 		this.player.timeUpdate.subscribe(({ percentage, currentTime, duration }) => {
@@ -346,6 +351,11 @@ export class PlayerComponent implements AfterViewInit {
 	}
 
 	private resetStyle() {
+		/* const style = this.albumArt.nativeElement.style.backgroundImage.currentStyle || window.getComputedStyle(this.albumArt.nativeElement.style.backgroundImage);
+		const bgImageUrl = style.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2').split(',')[0];
+		if (bgImageUrl !== '/mobile-assets/Record.png')
+			URL.revokeObjectURL(bgImageUrl); */
+
 		this.contentElem.nativeElement.style.setProperty('--background-color-darker', '#0e1c29');
 		this.albumArt.nativeElement.style.backgroundImage = 'url(/mobile-assets/Record.png)';
 		this.contentElem.nativeElement.style.setProperty('--background-color', '#273642');
