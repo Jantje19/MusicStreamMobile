@@ -79,7 +79,11 @@ export class MainComponent {
 		document.title = this.title;
 		this.dataService.update(this.songSort, false);
 		this.dataService.load.subscribe(() => {
-			this._songSortTypes = this.dataService.settings.audioDefaultSortType.options;
+			if (this.dataService.settings.audioDefaultSortType && navigator.onLine)
+				this._songSortTypes = this.dataService.settings.audioDefaultSortType.options;
+			else
+				this._songSortTypes = [this.songSort];
+
 			this._playlists = this.dataService.playlists;
 			this._songs = this.dataService.songs;
 

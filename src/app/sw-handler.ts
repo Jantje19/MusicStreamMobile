@@ -1,7 +1,11 @@
+import { environment } from 'src/environments/environment';
 import { Song } from '../app/data-types';
 
 const generateFileLocation = (fileName: string, path = '/song/') => {
-	return location.origin + path + fileName;
+	if (environment.apiUrl)
+		return environment.apiUrl + path + fileName;
+	else
+		return location.origin + path + fileName;
 }
 
 class SWHandler {

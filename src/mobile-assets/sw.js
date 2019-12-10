@@ -1,15 +1,16 @@
 if ('serviceWorker' in navigator) {
-	if (window.location.port === '4200') {
-		import { Workbox } from 'http://localhost:8000/ServiceWorker/workbox/workbox-window.prod.mjs';
-		var wb = new Workbox('http://localhost:8000/service-worker.js', { scope: '/' });
-	} else {
-		import { Workbox } from '/ServiceWorker/workbox/workbox-window.prod.mjs';
-		var wb = new Workbox('/service-worker.js', { scope: '/mobile/' });
-	}
+	new Promise(async (resolve, _) => {
+		const { Workbox } = await import('/ServiceWorker/workbox/workbox-window.prod.mjs');
 
-	wb.register().catch(console.error);
-	// TODO: Add this
-	/* wb.addEventListener('waiting', () => {
+		if (window.location.port === '4200')
+			resolve(new Workbox('/service-worker-mobile.js', { scope: '/' }));
+		else
+			resolve(new Workbox('/service-worker-mobile.js', { scope: '/mobile/' }));
+	}).then(wb => {
+		wb.register().catch(console.error);
+		// TODO: Add this
+		/* wb.addEventListener('waiting', () => {
 
-	});*/
+		});*/
+	}).catch(console.error);
 }

@@ -39,58 +39,66 @@ export class DataService {
 	}
 
 	update(sortMethod: string, onlyData = true, force = false) {
-		const promiseArr = [this.swHandler.getDownloaded()];
-		const addDataFetch = () => {
-			promiseArr.push(new Promise((resolve, reject) => {
-				this.http
-					.get(environment.apiUrl + '/data/?sort=' + sortMethod)
-					.subscribe(resolve, reject);
-			}));
+		this.swHandler.getDownloaded().then(downloaded => {
+			const addDataFetch = () => {
+				const promiseArr = [];
 
-			if (!onlyData) {
 				promiseArr.push(new Promise((resolve, reject) => {
 					this.http
-						.get(environment.apiUrl + '/getSettings/')
-						.subscribe((resp: any) => {
-							if (!resp.success)
-								reject('Unable to fetch settings');
-							else {
-								this._settings = resp.data;
-								resolve();
-							}
-						}, reject);
+						.get(environment.apiUrl + '/data/?sort=' + sortMethod)
+						.subscribe(resolve, reject);
 				}));
+
+				if (!onlyData) {
+					promiseArr.push(new Promise((resolve, reject) => {
+						this.http
+							.get('/getSettings/')
+							.subscribe((resp: any) => {
+								if (!resp.success)
+									reject('Unable to fetch settings');
+								else {
+									this._settings = resp.data;
+									resolve();
+								}
+							}, reject);
+					}));
+				}
+
+				return promiseArr;
 			}
-		}
 
-		if (force === true || !(
-			Object.keys(this.settings).length > 0 ||
-			this.subtitles.length > 0 ||
-			this.videos.length > 0 ||
-			this.songs.length > 0
-		))
-			addDataFetch();
+			if (navigator.onLine && force === true || !(
+				Object.keys(this.settings).length > 0 ||
+				this.subtitles.length > 0 ||
+				this.videos.length > 0 ||
+				this.songs.length > 0
+			)) {
+				Promise.all(addDataFetch())
+					.then(([dataObj]) => {
+						const { audio, video } = <any>dataObj;
+						const { videos, subtitles } = video;
+						const { songs, playlists } = audio;
 
-		Promise.all(promiseArr)
-			.then(([downloaded, dataObj]) => {
-				const { audio, video } = <any>dataObj;
-				const { videos, subtitles } = video;
-				const { songs, playlists } = audio;
+						this._subtitles = subtitles;
+						this._playlists = playlists.map(val => new Playlist(val));
+						this._songs = songs.map(val => {
+							return new Song(val, downloaded.songs.includes(val));
+						});
 
-				this._subtitles = subtitles;
-				this._playlists = playlists.map(val => new Playlist(val));
-				this._songs = songs.map(val => {
-					return new Song(val, downloaded.songs.includes(val));
-				});
+						// TODO: Fix this
+						// Temporarily put them all in one array
+						Object.keys(videos).forEach(folder => {
+							this._videos.push(...videos[folder].map(vid => new Video(vid)));
+						});
 
-				// TODO: Fix this
-				// Temporarily put them all in one array
-				Object.keys(videos).forEach(folder => {
-					this._videos.push(...videos[folder].map(vid => new Video(vid)));
-				});
-
-				this.load.emit();
-			})
-			.catch(this.error.emit.bind(this));
+						this.load.emit();
+					})
+					.catch(() => {
+						this._playlists = downloaded.playlists.map(val => new Playlist(val));
+						this._songs = downloaded.songs.map(str => new Song(str, true));
+						this.load.emit();
+					});
+			}
+		}).catch(this.error.emit.bind(this));
 	}
 }

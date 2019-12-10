@@ -162,6 +162,7 @@ class Player {
 				dataService.settings.collectMostListened.val === true &&
 				this.mediaElem instanceof HTMLAudioElement
 			) {
+				const selectedSong = <Song>this.queue.selected;
 				const tryBgSync = async () => {
 					if (!('SyncManager' in window))
 						throw Error('SyncManager is not in window');
@@ -169,21 +170,21 @@ class Player {
 					if (navigator.serviceWorker && navigator.serviceWorker.ready)
 						throw Error('No service worker available');
 
-					return await (await navigator.serviceWorker.ready).sync.register('updatemostlistened-' + this.queue.selected.name);
+					return await (await navigator.serviceWorker.ready).sync.register('updatemostlistened-' + selectedSong.name);
 				}
 
 				tryBgSync().then(() => {
-					this.bgSyncLogger.add(true, <Song>this.queue.selected);
-				}).catch(() => {
+					this.bgSyncLogger.add(true, selectedSong);
+				}).catch(bgFetchError => {
 					const handleError = err => {
-						this.bgSyncLogger.add(false, <Song>this.queue.selected, err);
+						this.bgSyncLogger.add(false, selectedSong, new Error(JSON.stringify(err)), bgFetchError);
 					}
 
 					this.http
-						.post(environment.apiUrl + '/updateMostListenedPlaylist', this.queue.selected.name)
+						.post(environment.apiUrl + '/updateMostListenedPlaylist', selectedSong.name)
 						.subscribe((data: { success: boolean, data: any, error: any }) => {
 							if (data.success) {
-								this.bgSyncLogger.add(false, <Song>this.queue.selected);
+								this.bgSyncLogger.add(false, selectedSong);
 								console.log(data.data);
 							} else
 								handleError(data.error);
@@ -502,13 +503,14 @@ class BackgroundsyncLogger {
 		return this._log;
 	}
 
-	public add(usedBgSync: boolean = false, song: Song, error: Error = null): Song {
+	public add(usedBgSync: boolean = false, song: Song, error: Error = null, bgfetchError: Error = null): Song {
 		if (error)
 			this._log.push(`(${(new Date()).toLocaleString()}):\t[Error] ${song.name} (${error})`);
 		else if (usedBgSync)
 			this._log.push(`(${(new Date()).toLocaleString()}):\t[Background Sync] ${song.name}`);
 		else
-			this._log.push(`(${(new Date()).toLocaleString()}):\t[Fallback method] ${song.name}`);
+			this._log.push(`(${(new Date()).toLocaleString()}):\t[Fallback method: (${bgfetchError})] ${song.name}`);
+
 		return song;
 	}
 }
