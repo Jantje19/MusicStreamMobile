@@ -167,9 +167,6 @@ class Player {
 					if (!('SyncManager' in window))
 						throw Error('SyncManager is not in window');
 
-					if (navigator.serviceWorker && navigator.serviceWorker.ready)
-						throw Error('No service worker available');
-
 					return await (await navigator.serviceWorker.ready).sync.register('updatemostlistened-' + selectedSong.name);
 				}
 
@@ -177,14 +174,14 @@ class Player {
 					this.bgSyncLogger.add(true, selectedSong);
 				}).catch(bgFetchError => {
 					const handleError = err => {
-						this.bgSyncLogger.add(false, selectedSong, new Error(JSON.stringify(err)), bgFetchError);
+						this.bgSyncLogger.add(false, selectedSong, bgFetchError, new Error(JSON.stringify(err)));
 					}
 
 					this.http
 						.post(environment.apiUrl + '/updateMostListenedPlaylist', selectedSong.name)
 						.subscribe((data: { success: boolean, data: any, error: any }) => {
 							if (data.success) {
-								this.bgSyncLogger.add(false, selectedSong);
+								this.bgSyncLogger.add(false, selectedSong, bgFetchError);
 								console.log(data.data);
 							} else
 								handleError(data.error);
@@ -503,7 +500,7 @@ class BackgroundsyncLogger {
 		return this._log;
 	}
 
-	public add(usedBgSync: boolean = false, song: Song, error: Error = null, bgfetchError: Error = null): Song {
+	public add(usedBgSync: boolean = false, song: Song, bgfetchError: Error = null, error: Error = null): Song {
 		if (error)
 			this._log.push(`(${(new Date()).toLocaleString()}):\t[Error] ${song.name} (${error})`);
 		else if (usedBgSync)
