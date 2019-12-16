@@ -167,21 +167,24 @@ class Player {
 					if (!('SyncManager' in window))
 						throw Error('SyncManager is not in window');
 
-					return await (await navigator.serviceWorker.ready).sync.register('updatemostlistened-' + selectedSong.name);
+					const id = BackgroundsyncLog.newId();
+					await (await navigator.serviceWorker.ready).sync.register(`updatemostlistened-${id}-${selectedSong.name}`);
+					return id;
 				}
 
-				tryBgSync().then(() => {
-					this.bgSyncLogger.add(true, selectedSong);
-				}).catch(bgFetchError => {
+				tryBgSync().then(id => {
+					this.bgSyncLogger.add(new BackgroundsyncLog(true, selectedSong, id));
+				}).catch(bgSyncError => {
+					const id = BackgroundsyncLog.newId();
 					const handleError = err => {
-						this.bgSyncLogger.add(false, selectedSong, bgFetchError, new Error(JSON.stringify(err)));
+						this.bgSyncLogger.add(new BackgroundsyncLog(false, selectedSong, id, bgSyncError, new Error(JSON.stringify(err))));
 					}
 
 					this.http
 						.post(environment.apiUrl + '/updateMostListenedPlaylist', selectedSong.name)
 						.subscribe((data: { success: boolean, data: any, error: any }) => {
 							if (data.success) {
-								this.bgSyncLogger.add(false, selectedSong, bgFetchError);
+								this.bgSyncLogger.add(new BackgroundsyncLog(false, selectedSong, id, bgSyncError));
 								console.log(data.data);
 							} else
 								handleError(data.error);
@@ -493,22 +496,76 @@ class Queue {
 	}
 }
 
+class BackgroundsyncLog {
+	private static alphabet = 'abcdefghijklmnopqrstuvwxyz';
+	private _bgSyncSuccess: boolean = null;
+	private _timeStamp: Date;
+	private _id: string;
+
+	public get id() {
+		return this._id;
+	}
+
+	public set backgroundSyncSuccess(val: boolean) {
+		this._bgSyncSuccess = val;
+	}
+
+	constructor(
+		private usedBgSync: boolean = false,
+		private song: Song,
+		id: string,
+		private bgSyncError: Error = null,
+		private error: Error = null,
+	) {
+		this._timeStamp = new Date();
+		this._id = id;
+	}
+
+	public toString(): string {
+		if (this.error)
+			return `(${this._timeStamp.toLocaleString()}):\t[Error] ${this.song.name} (${this.error})`;
+		else if (this.usedBgSync && this._bgSyncSuccess !== null)
+			return `(${this._timeStamp.toLocaleString()}):\t[Background Sync (success: ${this._bgSyncSuccess})] ${this.song.name}`;
+		else if (this.usedBgSync)
+			return `(${this._timeStamp.toLocaleString()}):\t[Background Sync] ${this.song.name}`;
+		else
+			return `(${this._timeStamp.toLocaleString()}):\t[Fallback method: (${this.bgSyncError})] ${this.song.name}`;
+	}
+
+	public static newId(length: number = 10): string {
+		const alphabet = this.alphabet + this.alphabet.toUpperCase();
+		let returnStr = '';
+
+		for (let i = 0; i < length; i++)
+			returnStr += alphabet[Math.floor(Math.random() * alphabet.length)];
+
+		return returnStr;
+	}
+}
+
 class BackgroundsyncLogger {
-	private _log: string[] = [];
+	private _log: BackgroundsyncLog[] = [];
 
 	get log() {
 		return this._log;
 	}
 
-	public add(usedBgSync: boolean = false, song: Song, bgfetchError: Error = null, error: Error = null): Song {
-		if (error)
-			this._log.push(`(${(new Date()).toLocaleString()}):\t[Error] ${song.name} (${error})`);
-		else if (usedBgSync)
-			this._log.push(`(${(new Date()).toLocaleString()}):\t[Background Sync] ${song.name}`);
-		else
-			this._log.push(`(${(new Date()).toLocaleString()}):\t[Fallback method: (${bgfetchError})] ${song.name}`);
+	constructor() {
+		(new BroadcastChannel('bgsync-update')).addEventListener('message', async (event: any) => {
+			this.findById(event.data.id).backgroundSyncSuccess = event.data.success;
+		});
+	}
 
-		return song;
+	public add(log: BackgroundsyncLog): BackgroundsyncLog | boolean {
+		if (this.findById(log.id))
+			return false;
+
+		this._log.push(log);
+		return log;
+	}
+
+	public findById(id: string): BackgroundsyncLog {
+		return this._log.filter(val => val.id === id)[0];
 	}
 }
 
