@@ -135,7 +135,7 @@ class Player {
 	}
 
 	@Output() timeUpdate = new EventEmitter<{ percentage: number, currentTime: number, duration: number }>();
-	@Output() songUpdate = new EventEmitter<boolean>();
+	@Output() songUpdate = new EventEmitter<void>();
 
 	constructor(
 		private mediaElem: HTMLAudioElement | HTMLVideoElement,
@@ -357,7 +357,7 @@ class Player {
 			if (this.mediaElem instanceof HTMLAudioElement) {
 				const selected = <Song>this.queue.selected;
 
-				if (!doNotUpdateMediaSessionMetadata) {
+				if (!(doNotUpdateMediaSessionMetadata === true)) {
 					// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
 					navigator.mediaSession.metadata = new MediaMetadata({
 						title: selected.tags.title || selected.info,
@@ -373,7 +373,7 @@ class Player {
 						]
 					});
 
-					this.songUpdate.emit(this.mediaElem.ended);
+					this.songUpdate.emit();
 				}
 			} else if (this.mediaElem instanceof HTMLVideoElement) {
 				const selected = <Video>this.queue.selected;
@@ -412,10 +412,8 @@ class Queue {
 			this.update.emit();
 		}
 
-		document.title = (
-			this.selected && this.selected instanceof Song ?
-				' - ' + this.selected.info : ''
-		) + "MusicStream";
+		if (this.selected && this.selected instanceof Song)
+			document.title = this.selected.info + " • MusicStream";
 	}
 
 	get list(): MediaType[] {
