@@ -155,8 +155,8 @@ class Player {
 			}
 		}
 
-		this.mediaElem.onplaying = this.update;
-		this.mediaElem.onpause = this.update;
+		this.mediaElem.onplaying = () => { this.update.bind(this)(true) };
+		this.mediaElem.onpause = () => { this.update.bind(this)(true) };
 		this.mediaElem.onended = () => {
 			if (
 				dataService.settings.collectMostListened.val === true &&
@@ -232,7 +232,7 @@ class Player {
 	play(): Player {
 		if (unescape(this.mediaElem.src).includes(this.queue.selected.name)) {
 			this.mediaElem.play();
-			this.update();
+			this.update(true);
 		} else {
 			this.mediaElem.src = environment.apiUrl +
 				((this.mediaElem instanceof HTMLAudioElement) ? '/song/' : '/video/')
@@ -349,7 +349,7 @@ class Player {
 		return outp;
 	}
 
-	private update() {
+	private update(doNotUpdateMediaSessionMetadata = false) {
 		// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
 		navigator.mediaSession.playbackState = this.playing ? "playing" : "paused";
 
@@ -357,22 +357,24 @@ class Player {
 			if (this.mediaElem instanceof HTMLAudioElement) {
 				const selected = <Song>this.queue.selected;
 
-				// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
-				navigator.mediaSession.metadata = new MediaMetadata({
-					title: selected.tags.title || selected.info,
-					artist: selected.tags.artist || "MusicStream",
-					album: selected.tags.album || "",
-					artwork: [
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-					]
-				});
+				if (!doNotUpdateMediaSessionMetadata) {
+					// @ts-ignore TypeScript does not know about the Media Session API: https://github.com/Microsoft/TypeScript/issues/19473
+					navigator.mediaSession.metadata = new MediaMetadata({
+						title: selected.tags.title || selected.info,
+						artist: selected.tags.artist || "MusicStream",
+						album: selected.tags.album || "",
+						artwork: [
+							{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+							{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+							{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+							{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
+							{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
+							{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+						]
+					});
 
-				this.songUpdate.emit(this.mediaElem.ended);
+					this.songUpdate.emit(this.mediaElem.ended);
+				}
 			} else if (this.mediaElem instanceof HTMLVideoElement) {
 				const selected = <Video>this.queue.selected;
 
