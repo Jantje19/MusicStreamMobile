@@ -413,7 +413,7 @@ class Queue {
 		}
 
 		if (this.selected && this.selected instanceof Song)
-			document.title = this.selected.info + " • MusicStream";
+			document.title = this.selected.info + " - MusicStream";
 	}
 
 	get list(): MediaType[] {
@@ -499,7 +499,6 @@ class Queue {
 class BackgroundsyncLog {
 	private static alphabet = 'abcdefghijklmnopqrstuvwxyz';
 	private _bgSyncSuccess: boolean = null;
-	private _timeStamp: Date;
 	private _id: string;
 
 	public get id() {
@@ -516,20 +515,22 @@ class BackgroundsyncLog {
 		id: string,
 		private bgSyncError: Error = null,
 		private error: Error = null,
+		private _timeStamp: Date = new Date()
 	) {
-		this._timeStamp = new Date();
 		this._id = id;
 	}
 
 	public toString(): string {
+		const dateStr = this._timeStamp ? this._timeStamp.toLocaleString() : 'Previously registered';
+
 		if (this.error)
-			return `(${this._timeStamp.toLocaleString()}):\t[Error] ${this.song.name} (${this.error})`;
+			return `(${dateStr}):\t[Error] ${this.song.name} (${this.error})`;
 		else if (this.usedBgSync && this._bgSyncSuccess !== null)
-			return `(${this._timeStamp.toLocaleString()}):\t[Background Sync (success: ${this._bgSyncSuccess})] ${this.song.name}`;
+			return `(${dateStr}):\t[Background Sync (success: ${this._bgSyncSuccess})] ${this.song.name}`;
 		else if (this.usedBgSync)
-			return `(${this._timeStamp.toLocaleString()}):\t[Background Sync] ${this.song.name}`;
+			return `(${dateStr}):\t[Background Sync] ${this.song.name}`;
 		else
-			return `(${this._timeStamp.toLocaleString()}):\t[Fallback method: (${this.bgSyncError})] ${this.song.name}`;
+			return `(${dateStr}):\t[Fallback method: (${this.bgSyncError})] ${this.song.name}`;
 	}
 
 	public static newId(length: number = 10): string {
@@ -547,7 +548,20 @@ class BackgroundsyncLogger {
 	private _log: BackgroundsyncLog[] = [];
 
 	get log() {
-		return this._log;
+		return {
+			currentlyRegistered: this._log,
+			previouslyRegistered: (async function () {
+				return (await (await navigator.serviceWorker.ready).sync.getTags())
+					.map(str => {
+						return new BackgroundsyncLog(
+							true,
+							new Song(str.replace('updatemostlistened-', ''), false),
+							BackgroundsyncLog.newId(),
+							null, null, null
+						);
+					});
+			})(),
+		}
 	}
 
 	constructor() {
@@ -569,4 +583,4 @@ class BackgroundsyncLogger {
 	}
 }
 
-export { Song, Video, MediaType, Playlist, Player, Queue, BackgroundsyncLogger, repeatMode, SWIPE_ACTION };
+export { Song, Video, MediaType, Playlist, Player, Queue, BackgroundsyncLog, BackgroundsyncLogger, repeatMode, SWIPE_ACTION };

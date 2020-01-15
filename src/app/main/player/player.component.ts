@@ -198,8 +198,21 @@ export class PlayerComponent implements AfterViewInit {
 	toggleQueue(evt): void {
 		if (evt.target.nodeName.toLowerCase() === 'mat-icon')
 			this.selectedMenuItem = <Song>this.player.queue.selected;
-		else
+		else {
 			this._queueState = !this.queueState;
+
+			// Queue scroll
+			(function () {
+				let index = this.player.queue.index + 1;
+
+				if (index > this.player.queue.length - 1)
+					index--;
+
+				this.queueElem.nativeElement.children[1]
+					.children[index]
+					.scrollIntoView();
+			}).bind(this)();
+		}
 	}
 
 	getSongInfo(): string {

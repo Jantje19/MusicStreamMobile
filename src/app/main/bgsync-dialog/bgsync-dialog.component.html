@@ -4,9 +4,9 @@
 	<p><span [attr.bool]="swInstalled ? true : false"></span>Service Worker installed: {{ swInstalled ? true : false }}</p>
 	<p><span [attr.bool]="bgSyncAvailable"></span>Background Sync available: {{ bgSyncAvailable }}</p>
 	<mat-divider></mat-divider>
-	<i *ngIf="bgSyncLog.log.length < 1">No log entries</i>
-	<div *ngIf="bgSyncLog.log.length > 0">
-		<p *ngFor="let entry of bgSyncLog.log">{{ entry }}</p>
+	<i *ngIf="log.length < 1">No log entries</i>
+	<div *ngIf="log.length > 0">
+		<p *ngFor="let entry of log">{{ entry }}</p>
 	</div>
 </div>
 <div mat-dialog-actions align="end">

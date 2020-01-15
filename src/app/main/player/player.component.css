@@ -220,10 +220,6 @@
 	grid-template-columns: auto 1fr auto;
 }
 
-:host>div>div#content>div#bottom-sheet>div#queue>div>div:first-child {
-	border-bottom: 1px solid #e0e0e0;
-}
-
 :host>div>div#content>div#bottom-sheet>div#queue>div>div>span {
 	padding: 0;
 	width: 64px;
