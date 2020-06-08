@@ -11,7 +11,7 @@ export class SubtitleDialogComponent {
 	selectedFileName: string = "No file chosen";
 	selectValue: string;
 
-	@ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+	@ViewChild('fileInput') fileInput: ElementRef;
 
 	constructor(
 		public dialogRef: MatDialogRef<SubtitleDialogComponent>,

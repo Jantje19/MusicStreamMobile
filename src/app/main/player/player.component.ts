@@ -46,16 +46,16 @@ export class PlayerComponent implements AfterViewInit {
 		return this._showAlbumartControls;
 	}
 
-	@ViewChild('shufflebutton', { static: false }) shuffleElem: ElementRef;
-	@ViewChild('bottomsheet', { static: false }) sheetElem: ElementRef;
-	@ViewChild('seekbar', { static: false }) seekbarElem: ElementRef;
-	@ViewChild('curTime', { static: false }) curTimeElem: ElementRef;
-	@ViewChild('durTime', { static: false }) durTimeElem: ElementRef;
-	@ViewChild('content', { static: false }) contentElem: ElementRef;
-	@ViewChild('container', { static: false }) topElem: ElementRef;
-	@ViewChild('albumart', { static: false }) albumArt: ElementRef;
-	@ViewChild('playbtn', { static: false }) playElem: ElementRef;
-	@ViewChild('queue', { static: false }) queueElem: ElementRef;
+	@ViewChild('shufflebutton') shuffleElem: ElementRef;
+	@ViewChild('bottomsheet') sheetElem: ElementRef;
+	@ViewChild('seekbar') seekbarElem: ElementRef;
+	@ViewChild('curTime') curTimeElem: ElementRef;
+	@ViewChild('durTime') durTimeElem: ElementRef;
+	@ViewChild('content') contentElem: ElementRef;
+	@ViewChild('container') topElem: ElementRef;
+	@ViewChild('albumart') albumArt: ElementRef;
+	@ViewChild('playbtn') playElem: ElementRef;
+	@ViewChild('queue') queueElem: ElementRef;
 
 	constructor(
 		private snackBar: MatSnackBar,

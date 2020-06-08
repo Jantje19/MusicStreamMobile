@@ -29,8 +29,8 @@ enum playlistMenuClickTypes {
 export class MainComponent {
 	public title = 'MusicStream - BETA';
 
-	@ViewChild(PlayerComponent, { static: false }) private _player: PlayerComponent;
-	@ViewChild('searchInp', { static: false }) private searchInp: ElementRef;
+	@ViewChild(PlayerComponent) private _player: PlayerComponent;
+	@ViewChild('searchInp') private searchInp: ElementRef;
 	@ViewChildren(MatTab) private tabs;
 
 	private selectedPlaylistMenuItem: Playlist;

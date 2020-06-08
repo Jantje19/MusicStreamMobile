@@ -1,9 +1,10 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable, EventEmitter, Output, Directive } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Song, Playlist, Video } from './data-types';
 import { HttpClient } from '@angular/common/http';
 import SWHandler from './sw-handler';
 
+@Directive()
 @Injectable({
 	providedIn: 'root'
 })

@@ -22,7 +22,7 @@ enum videoMenuClickTypes {
 export class VideoComponent implements AfterViewInit {
 	public title = "MusicStream - BETA - Videos";
 
-	@ViewChild('video', { static: false }) videoElem: ElementRef;
+	@ViewChild('video') videoElem: ElementRef;
 
 	private selectedQueueMenuItem: number = null;
 	private selectedVideoMenuItem: Video = null;

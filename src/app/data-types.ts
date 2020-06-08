@@ -1,5 +1,5 @@
 import { environment } from 'src/environments/environment';
-import { Output, EventEmitter } from '@angular/core';
+import { Output, EventEmitter, Directive } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DataService } from './data.service';
 
@@ -126,6 +126,7 @@ class Playlist {
 	}
 }
 
+@Directive()
 class Player {
 	public repeatState: repeatMode = repeatMode.UNSET;
 	public queue: Queue;
@@ -397,6 +398,7 @@ class Player {
 	}
 }
 
+@Directive()
 class Queue {
 	private _list: MediaType[] = [];
 	private _index: number = 0;
