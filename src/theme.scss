@@ -1,6 +1,7 @@
+@use '@angular/material' as mat;
 @import '../node_modules/@angular/material/theming';
 
-@include mat-core();
+@include mat.core();
 
 $custom-green-color: (
   50: #e1f4f0,
@@ -36,10 +37,10 @@ $custom-green-color: (
 );
 
 
-$custom-theme-primary: mat-palette($custom-green-color);
-$custom-theme-accent: mat-palette($custom-green-color);
-$custom-theme-warn: mat-palette($mat-red);
+$custom-theme-primary: mat.define-palette($custom-green-color);
+$custom-theme-accent: mat.define-palette($custom-green-color);
+$custom-theme-warn: mat.define-palette(mat.$red-palette);
 
-$custom-theme: mat-light-theme($custom-theme-primary, $custom-theme-accent, $custom-theme-warn);
+$custom-theme: mat.define-light-theme($custom-theme-primary, $custom-theme-accent, $custom-theme-warn);
 
-@include angular-material-theme($custom-theme);
+@include mat.all-component-themes($custom-theme);

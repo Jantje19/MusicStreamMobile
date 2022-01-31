@@ -63,7 +63,7 @@ export class PlayerComponent implements AfterViewInit {
 		dataService: DataService,
 		http: HttpClient,
 	) {
-		const worker = new Worker('../../main-image-color.worker', { type: 'module' });
+		const worker = new Worker(new URL('../../main-image-color.worker', import.meta.url), { type: 'module' });
 		worker.onmessage = this.handleWorkerMessage.bind(this);
 
 		this.metaColorTag = document.querySelector('meta[name=theme-color]');

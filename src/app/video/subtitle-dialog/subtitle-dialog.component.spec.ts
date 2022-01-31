@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SubtitleDialogComponent } from './subtitle-dialog.component';
 
@@ -6,7 +6,7 @@ describe('SubtitleDialogComponent', () => {
 	let component: SubtitleDialogComponent;
 	let fixture: ComponentFixture<SubtitleDialogComponent>;
 
-	beforeEach(async(() => {
+	beforeEach(waitForAsync(() => {
 		TestBed.configureTestingModule({
 			declarations: [SubtitleDialogComponent]
 		})
