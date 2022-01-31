@@ -1,7 +1,7 @@
-import { Injectable, EventEmitter, Output, Directive } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { Song, Playlist, Video } from './data-types';
-import { HttpClient } from '@angular/common/http';
+import {Injectable, EventEmitter, Output, Directive} from '@angular/core';
+import {environment} from 'src/environments/environment';
+import {Song, Playlist, Video} from './data-types';
+import {HttpClient} from '@angular/common/http';
 import SWHandler from './sw-handler';
 
 @Directive()
@@ -59,7 +59,7 @@ export class DataService {
 									reject('Unable to fetch settings');
 								else {
 									this._settings = resp.data;
-									resolve();
+									resolve(undefined);
 								}
 							}, reject);
 					}));
@@ -76,9 +76,9 @@ export class DataService {
 			)) {
 				Promise.all(addDataFetch())
 					.then(([dataObj]) => {
-						const { audio, video } = <any>dataObj;
-						const { videos, subtitles } = video;
-						const { songs, playlists } = audio;
+						const {audio, video} = <any>dataObj;
+						const {videos, subtitles} = video;
+						const {songs, playlists} = audio;
 
 						this._subtitles = subtitles;
 						this._playlists = playlists.map(val => new Playlist(val));

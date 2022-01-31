@@ -1,5 +1,5 @@
-import { environment } from 'src/environments/environment';
-import { Song } from '../app/data-types';
+import {environment} from 'src/environments/environment';
+import {Song} from '../app/data-types';
 
 const generateFileLocation = (fileName: string, path = '/song/') => {
 	if (environment.apiUrl)
@@ -25,7 +25,7 @@ class SWHandler {
 				return;
 			}
 
-			const response = await fetch(fileLocation, { credentials: 'include' });
+			const response = await fetch(fileLocation, {credentials: 'include'});
 			const size = parseInt(response.headers.get('Content-Length'), 10);
 			const reader = response.body.getReader();
 			let lastUpdated = 0;
@@ -33,7 +33,7 @@ class SWHandler {
 			const chunks = [];
 
 			while (true) {
-				const { done, value } = await reader.read();
+				const {done, value} = await reader.read();
 
 				if (done)
 					break;
@@ -71,7 +71,7 @@ class SWHandler {
 								cache.put(infoFileLoc, respClone)
 									.then(() => {
 										songInfoFetched()
-										resolve();
+										resolve(undefined);
 									})
 									.catch(reject);
 							}
@@ -125,7 +125,7 @@ class SWHandler {
 		return await cache.put('/playlist/' + name, new Response(JSON.stringify({
 			songs: songs.map(song => song.name),
 			success: true,
-		}), { headers: { 'Content-Type': 'application/json' } }));
+		}), {headers: {'Content-Type': 'application/json'}}));
 	}
 
 	async removeDownload(file: Song) {

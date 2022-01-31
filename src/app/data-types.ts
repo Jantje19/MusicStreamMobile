@@ -1,7 +1,7 @@
-import { environment } from 'src/environments/environment';
-import { Output, EventEmitter, Directive } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { DataService } from './data.service';
+import {environment} from 'src/environments/environment';
+import {Output, EventEmitter, Directive} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {DataService} from './data.service';
 
 enum repeatMode {
 	QUEUE,
@@ -87,7 +87,7 @@ class Song extends MediaType {
 						if (!json.success)
 							reject(json.error);
 						else {
-							const { tags } = json;
+							const {tags} = json;
 							this.tags.artist = tags.artist;
 							this.tags.album = tags.album;
 							this.tags.title = tags.title;
@@ -135,7 +135,7 @@ class Player {
 		return !this.mediaElem.paused;
 	}
 
-	@Output() timeUpdate = new EventEmitter<{ percentage: number, currentTime: number, duration: number }>();
+	@Output() timeUpdate = new EventEmitter<{percentage: number, currentTime: number, duration: number}>();
 	@Output() songUpdate = new EventEmitter<void>();
 
 	constructor(
@@ -156,8 +156,8 @@ class Player {
 			}
 		}
 
-		this.mediaElem.onplaying = () => { this.update.bind(this)(true) };
-		this.mediaElem.onpause = () => { this.update.bind(this)(true) };
+		this.mediaElem.onplaying = () => {this.update.bind(this)(true)};
+		this.mediaElem.onpause = () => {this.update.bind(this)(true)};
 		this.mediaElem.onended = () => {
 			if (
 				dataService.settings.collectMostListened.val === true &&
@@ -169,6 +169,7 @@ class Player {
 						throw Error('SyncManager is not in window');
 
 					const id = BackgroundsyncLog.newId();
+					// @ts-ignore
 					await (await navigator.serviceWorker.ready).sync.register(`updatemostlistened-${id}-${selectedSong.name}`);
 					return id;
 				}
@@ -183,7 +184,7 @@ class Player {
 
 					this.http
 						.post(environment.apiUrl + '/updateMostListenedPlaylist', selectedSong.name)
-						.subscribe((data: { success: boolean, data: any, error: any }) => {
+						.subscribe((data: {success: boolean, data: any, error: any}) => {
 							if (data.success) {
 								this.bgSyncLogger.add(new BackgroundsyncLog(false, selectedSong, id, bgSyncError));
 								console.log(data.data);
@@ -365,12 +366,12 @@ class Player {
 						artist: selected.tags.artist || "MusicStream",
 						album: selected.tags.album || "",
 						artwork: [
-							{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-							{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-							{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-							{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
-							{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
-							{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+							{src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png'},
+							{src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png'},
+							{src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png'},
+							{src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png'},
+							{src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png'},
+							{src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png'},
 						]
 					});
 
@@ -385,12 +386,12 @@ class Player {
 					artist: "MusicStream",
 					album: "",
 					artwork: [
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png' },
-						{ src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+						{src: environment.apiUrl + '/Assets/Icons/favicon-16x16.png', sizes: '16x16', type: 'image/png'},
+						{src: environment.apiUrl + '/Assets/Icons/favicon-32x32.png', sizes: '32x32', type: 'image/png'},
+						{src: environment.apiUrl + '/Assets/Icons/favicon-96x96.png', sizes: '96x96', type: 'image/png'},
+						{src: environment.apiUrl + '/Assets/Icons/icon-128.png', sizes: '128x128', type: 'image/png'},
+						{src: environment.apiUrl + '/Assets/Icons/icon-256.png', sizes: '256x256', type: 'image/png'},
+						{src: environment.apiUrl + '/Assets/Icons/icon-512.png', sizes: '512x512', type: 'image/png'},
 					]
 				});
 			}
@@ -553,6 +554,7 @@ class BackgroundsyncLogger {
 		return {
 			currentlyRegistered: this._log,
 			previouslyRegistered: (async function () {
+				// @ts-ignore
 				return (await (await navigator.serviceWorker.ready).sync.getTags())
 					.map(str => {
 						return new BackgroundsyncLog(
@@ -585,4 +587,4 @@ class BackgroundsyncLogger {
 	}
 }
 
-export { Song, Video, MediaType, Playlist, Player, Queue, BackgroundsyncLog, BackgroundsyncLogger, repeatMode, SWIPE_ACTION };
+export {Song, Video, MediaType, Playlist, Player, Queue, BackgroundsyncLog, BackgroundsyncLogger, repeatMode, SWIPE_ACTION};
